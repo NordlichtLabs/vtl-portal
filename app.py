@@ -225,11 +225,36 @@ st.write("---")
 # --- 9. HISTORY ---
 st.header("📜 Protokoll-Historie")
 for idx, h in enumerate(st.session_state.history_data):
-    hc1, hc2, hc3 = st.columns([2, 5, 2])
-    hc1.write(f"**{h['Datum']}**")
-    hc2.write("Multi-Entropy Verification")
-    if hc3.button("Details", key=f"hist_{idx}"):
-        st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
-        st.rerun()
-    if st.session_state.get(f"open_{idx}", False):
-        st.markdown(f"<div class='detail-box'><p>DE: {h['DE']} | AT: {h['AT']} | IT: {h['IT']}</p><p style='font-family: sans-serif; font-size: 14px;'><b>SHA-256 HASH:</b> {h['Hash']}</p></div>", unsafe_allow_html=True)
+    # Container für die Historie-Einträge
+    with st.container():
+        col_date, col_vals, col_btn = st.columns([2, 5, 2])
+        
+        with col_date:
+            st.markdown(f"<div style='padding-top: 10px;'><b>📅 {h['Datum']}</b></div>", unsafe_allow_html=True)
+            
+        with col_vals:
+            # Zahlen untereinander gelistet
+            st.markdown(f"""
+                <div style='font-size: 14px; line-height: 1.6; border-left: 2px solid #00d4ff; padding-left: 15px;'>
+                    <span style='color: #00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br>
+                    <span style='color: #00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br>
+                    <span style='color: #00d4ff;'>●</span> <b>IT:</b> {h['IT']}
+                </div>
+            """, unsafe_allow_html=True)
+            
+        with col_btn:
+            if st.button("Hash anzeigen", key=f"hist_btn_{idx}"):
+                st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
+                st.rerun()
+        
+        # Aufklappbarer Hash-Bereich
+        if st.session_state.get(f"open_{idx}", False):
+            st.markdown(f"""
+                <div class='detail-box' style='margin-bottom: 20px;'>
+                    <p style='font-family: monospace; font-size: 12px; color: #aaa; margin: 0;'>
+                        <b>VERIFICATION HASH:</b><br>{h['Hash']}
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("<hr style='border: 0.5px solid #222; margin: 10px 0;'>", unsafe_allow_html=True)
