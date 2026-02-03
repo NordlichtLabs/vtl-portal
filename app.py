@@ -83,8 +83,7 @@ if choice == "VTL Generator":
                 ob das Resultat wirklich dem Zufall entspringt oder im Nachhinein manipuliert wurde. Ohne beweisbare Integrität bleibt jede digitale Entscheidung 
                 eine Vertrauensfrage, kein mathematischer Fakt.
             </div>
-            <div class="marketing-message">
-                In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
+            <div class="marketing-message"> 
                 VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
                 dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
             </div>
