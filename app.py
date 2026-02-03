@@ -23,7 +23,7 @@ st.markdown("""
     .stApp { background-color: #2e2e2e; color: #ffffff; }
     [data-testid="stSidebar"] { background-color: #2e2e2e; border-right: 1px solid #444; }
     
-    /* Einheitliches Blau für alle Überschriften */
+    /* Blau für Überschriften */
     h1, h2, h3, .blue-header { color: #004a99 !important; }
     
     /* Buttons */
@@ -34,7 +34,10 @@ st.markdown("""
     .login-btn { background-color: transparent; border: 1px solid #ffffff; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; cursor: pointer; }
     .signup-btn { background-color: #ffffff; color: #2e2e2e; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; }
 
-    /* How it works Cards (Blau ohne weißen Schatten/Border) */
+    /* Problem Statement Styling */
+    .problem-text { color: #aaaaaa; font-style: italic; font-size: 18px; line-height: 1.5; max-width: 900px; margin-bottom: 25px; border-left: 3px solid #004a99; padding-left: 20px; }
+
+    /* How it works Cards */
     .hiw-card { background-color: #004a99; padding: 25px; border-radius: 12px; height: 100%; min-height: 220px; color: #ffffff; border: none; }
     .hiw-number { color: #ffffff; font-size: 28px; font-weight: bold; margin-bottom: 15px; opacity: 0.8; }
     .hiw-card b { font-size: 18px; color: #ffffff !important; }
@@ -69,20 +72,21 @@ if st.sidebar.button("🔄 System Reset"):
 
 # --- 5. CONTENT STEUERUNG ---
 if choice == "VTL Generator":
-    # Marketing Message
+    # Marketing & Problem Section
     st.markdown("""
-        <div style="margin-bottom: 20px; margin-top: 10px;">
-            <h2 style="color: #ffffff !important; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
-            <p style="font-size: 20px; line-height: 1.6; color: #ffffff; max-width: 1000px;">
-                In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
-                VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
-                dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
-            </p>
+        <div style="margin-top: 10px;">
+            <h2 style="color: #ffffff !important; margin-bottom: 5px;">„Don't Trust, Verify“</h2>
+            <div class="problem-text">
+                Das Problem herkömmlicher Zufallsgeneratoren: Ein digitales Blindvertrauen. Die meisten heutigen Systeme zur Zufallszahlengenerierung sind eine <b>Blackbox</b>. 
+                Ob bei Gewinnspielen, Audits oder Zuteilungen – das Ergebnis wird hinter verschlossenen Türen berechnet. Für den Nutzer ist nicht nachvollziehbar, 
+                ob das Resultat wirklich dem Zufall entspringt oder im Nachhinein manipuliert wurde. Ohne beweisbare Integrität bleibt jede digitale Entscheidung 
+                eine Vertrauensfrage, kein mathematischer Fakt.
+            </div>
         </div>
         """, unsafe_allow_html=True)
     st.write("---")
 
-    # How it works Sektion
+    # How it works Cards
     st.subheader("Der VTL-Prozess: In 4 Schritten zur beweisbaren Wahrheit")
     hiw_col1, hiw_col2, hiw_col3, hiw_col4 = st.columns(4)
     with hiw_col1:
@@ -96,7 +100,7 @@ if choice == "VTL Generator":
     
     st.write("---")
 
-    # Generator Tools
+    # Generator Tools (Security Vault, Entropy Source, Generator)
     col1, col2 = st.columns([1, 1])
     with col1:
         st.header("🔐 Security Vault")
@@ -104,7 +108,6 @@ if choice == "VTL Generator":
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
         st.markdown('Protocol-Salt <span class="required-star">*</span>', unsafe_allow_html=True)
         raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt zur Versiegelung ein...", label_visibility="collapsed")
-        st.markdown('<p class="info-hint">Der Salt ist ein einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt.</p>', unsafe_allow_html=True)
         
         if st.button("Salt im VTL Vault registrieren"):
             if raw_salt.strip():
@@ -128,8 +131,6 @@ if choice == "VTL Generator":
         l_de = entropy_row("Quellwerte (DE)", "07, 14, 22, 31, 44, 49", "de")
         l_at = entropy_row("Quellwerte (AT)", "02, 18, 24, 33, 41, 45", "at")
         l_it = entropy_row("Quellwerte (IT)", "11, 23, 35, 56, 62, 88", "it")
-        st.markdown('<p class="info-hint">Hinweis: Die Quellwerte werden erst im Anschluss an die Ziehung angezeigt.</p>', unsafe_allow_html=True)
-        
         m_entropy = f"{l_de}-{l_at}-{l_it}-{today_str}"
         e_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
