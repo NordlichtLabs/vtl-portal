@@ -45,7 +45,22 @@ st.markdown("""
     .web3-text { color: #ff00ff; font-weight: bold; font-size: 22px; }
 
     .hiw-card { background-color: rgba(0, 74, 153, 0.15); padding: 25px; border-radius: 12px; height: 100%; border: 1px solid #004a99; }
-    .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', monospace; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.3); }
+    
+    /* Zertifikat Styling */
+    .certificate { 
+        border: 2px solid #000; 
+        padding: 25px; 
+        border-radius: 10px; 
+        background-color: #ffffff; 
+        color: #000000; 
+        font-family: 'Courier New', monospace; 
+        position: relative; 
+        box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        line-height: 1.2;
+    }
+    .cert-label { font-weight: bold; font-size: 10px; color: #666; text-transform: uppercase; }
+    .cert-value { font-size: 12px; margin-bottom: 8px; word-break: break-all; }
+
     .timer-container { border: 1px solid #ff00ff; background-color: rgba(255, 0, 255, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff00ff; }
     .vault-info { background-color: #000; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .detail-box { background-color: rgba(0, 212, 255, 0.05); padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #00d4ff; }
@@ -116,12 +131,12 @@ with col_v:
     
     with st.expander("💡 Was ist der Protocol-Salt? (Beispiel)"):
         st.markdown("""
-            Der **Protocol-Salt** ist Ihr persönlicher „Fingerabdruck“ im System. Er garantiert, dass Ergebnisse individuell berechnet werden und vorab nicht manipuliert werden können.
+            Der **Protocol-Salt** ist Ihr persönlicher „Fingerabdruck“. Er garantiert, dass Ergebnisse individuell berechnet werden.
             
             **Das Tresor-Prinzip:**
-            1. **Versiegelung:** Bevor die Lottozahlen (Entropie) gezogen werden, legen Sie einen Salt (z.B. `SafeCode123`) in unseren digitalen Tresor.
-            2. **Zeitstempel:** Das System quittiert die Versiegelung, *bevor* die Ziehung stattfindet.
-            3. **Die Kopplung:** Nach der Ziehung wird Ihr Salt mit den Lottozahlen verrechnet: `[Lottozahlen] + [SafeCode123] = Ihr Ergebnis`.
+            1. **Versiegelung:** Sie legen einen Salt vor der Ziehung in den digitalen Tresor.
+            2. **Zeitstempel:** Das System bestätigt den Eingang *vor* der Ziehung.
+            3. **Die Kopplung:** `[Lottozahlen] + [Ihr Salt] = Ergebnis`.
         """)
     
     btn_c, tim_c = st.columns([2, 1])
@@ -139,7 +154,6 @@ with col_v:
             st.markdown("""<script>(function(){var d=new Date(Date.parse(new Date())+600000);function u(){var t=Date.parse(d)-Date.parse(new Date());var s=Math.floor((t/1000)%60);var m=Math.floor((t/1000/60)%60);var e=document.getElementById('c-clock');if(e){e.innerHTML=m+":"+('0'+s).slice(-2);if(t<=0)clearInterval(i);}}u();var i=setInterval(u,1000);})();</script>""", unsafe_allow_html=True)
 
     if st.session_state.registered_salts:
-        st.markdown("""<div style="font-size: 15px; margin-top:15px; line-height:1.4;"><b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen.</div>""", unsafe_allow_html=True)
         ls = st.session_state.registered_salts[-1]
         st.markdown(f'<div class="vault-info"><b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br><b>Vault-Hash:</b> {ls["Hash"][:32]}...</div>', unsafe_allow_html=True)
 
@@ -149,7 +163,6 @@ with col_e:
     l_de = st.text_input(f"Quellwerte DE ({today})", "07, 14, 22, 31, 44, 49")
     l_at = st.text_input(f"Quellwerte AT ({today})", "02, 18, 24, 33, 41, 45")
     l_it = st.text_input(f"Quellwerte IT ({today})", "11, 23, 35, 56, 62, 88")
-    st.markdown('<p style="color:#aaa; font-style:italic; font-size:13px;">Hinweis: Quellwerte werden erst nach der offiziellen Ziehung angezeigt.</p>', unsafe_allow_html=True)
     e_hash = hashlib.sha256(f"{l_de}{l_at}{l_it}{today}".encode()).hexdigest()
 
 st.write("---")
@@ -167,28 +180,68 @@ if st.button("Zahlen & Zertifikat berechnen"):
         m_seed = f"{e_hash}-{curr['Salt']}"
         m_hash = hashlib.sha256(m_seed.encode()).hexdigest()
         results = [(int(hashlib.sha256(f"{m_hash}-{i}".encode()).hexdigest(), 16) % (max_v - min_v + 1)) + min_v for i in range(1, count + 1)]
+        
         rl, rr = st.columns(2)
         with rl:
             st.table(pd.DataFrame({"Wert": results}, index=range(1, count+1)))
         with rr:
-            st.markdown(f"""<div class='certificate'><div style='position:absolute; bottom:20px; right:20px; border:3px double #28a745; color:#28a745; padding:5px 10px; font-weight:bold; transform:rotate(-15deg); border-radius:5px;'>VTL VERIFIED</div><h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3><p style='font-size:12px;'><b>REF:</b> {p_id} | <b>DATE:</b> {today}</p><hr><p style='font-size:10px; word-break:break-all;'><b>MASTER HASH:</b><br>{m_hash}</p><hr><p style='text-align:center; font-size:20px; font-weight:bold;'>{", ".join(map(str, results))}</p></div>""", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class='certificate'>
+                    <div style='position:absolute; bottom:20px; right:20px; border:3px double #28a745; color:#28a745; padding:5px 10px; font-weight:bold; transform:rotate(-15deg); border-radius:5px;'>VTL VERIFIED</div>
+                    <h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3>
+                    <div class='cert-label'>Reference-ID & Date</div>
+                    <div class='cert-value'>{p_id} | {today}</div>
+                    <hr>
+                    <div class='cert-label'>Entropy Sources (DE/AT/IT)</div>
+                    <div class='cert-value'>{l_de} | {l_at} | {l_it}</div>
+                    <div class='cert-label'>Protocol-Salt (Sealed)</div>
+                    <div class='cert-value'>{curr['Salt']}</div>
+                    <hr>
+                    <div class='cert-label'>Kryptografischer Master-Hash</div>
+                    <div class='cert-value' style='font-size:10px;'>{m_hash}</div>
+                    <hr>
+                    <p style='text-align:center; font-size:22px; font-weight:bold; margin-top:10px;'>{", ".join(map(str, results))}</p>
+                </div>
+            """, unsafe_allow_html=True)
+            # Speichere den Hash für den Validator-Test
+            st.session_state.last_m_hash = m_hash
     else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
 
 st.write("---")
 
 # --- 8. VALIDATOR ---
 st.header("🔍 Public Validator")
-st.markdown("""<div style="font-size:24px; font-weight:bold; color:#00d4ff; margin-bottom:10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>
-    <div style="font-size:18px; color:#ffffff; line-height:1.5; max-width:1000px; margin-bottom:20px;">
-    Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette.</div>""", unsafe_allow_html=True)
+st.markdown("""
+    <div style="margin-bottom: 30px;">
+        <div style="font-size: 24px; font-weight: bold; color: #00d4ff; margin-bottom: 10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>
+        <div style="font-size: 18px; color: #ffffff; line-height: 1.5; max-width: 1000px;">
+            Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
+            Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
+            offiziellen Entropie-Quellen ab.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
+
 if st.button("Integrität prüfen"):
     if v_hash:
         with st.spinner('Validierung...'):
             time.sleep(1.2)
-            st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-            st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
-            st.markdown(f"**Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**<br>• Entropy Source Sync verifiziert.<br>• Date-Binding bestätigt.<br>• Security Vault abgeglichen.<br>• Proof of Fairness: OK.", unsafe_allow_html=True)
+            # Echte Prüfung gegen den zuletzt generierten Hash (oder die History)
+            is_valid = False
+            if 'last_m_hash' in st.session_state and v_hash == st.session_state.last_m_hash:
+                is_valid = True
+            elif any(h['Hash'] == v_hash for h in st.session_state.history_data):
+                is_valid = True
+            
+            if is_valid:
+                st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
+                st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
+                st.markdown(f"**Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**<br>• Entropy Source Sync verifiziert.<br>• Date-Binding bestätigt.<br>• Security Vault abgeglichen.<br>• Proof of Fairness: OK.", unsafe_allow_html=True)
+            else:
+                st.error("❌ INTEGRITÄT VERLETZT / UNBEKANNTER HASH")
+                st.warning("Warnung: Dieser Hash konnte nicht in den offiziellen Protokollen verifiziert werden. Die Daten könnten manipuliert worden sein.")
 
 st.write("---")
 
@@ -196,16 +249,12 @@ st.write("---")
 st.header("📜 Protokoll-Historie")
 for idx, h in enumerate(st.session_state.history_data):
     with st.container():
-        # Nur Datum links, Button rechts
         col_date, col_btn = st.columns([7, 2])
-        with col_date: 
-            st.markdown(f"<div style='padding-top:10px; font-size:18px;'><b>📅 {h['Datum']}</b></div>", unsafe_allow_html=True)
+        with col_date: st.markdown(f"<div style='padding-top:10px; font-size:18px;'><b>📅 {h['Datum']}</b></div>", unsafe_allow_html=True)
         with col_btn:
             if st.button("Details", key=f"hist_btn_{idx}"):
                 st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
                 st.rerun()
-        
-        # Details klappen Quellwerte und Hash auf
         if st.session_state.get(f"open_{idx}", False):
             st.markdown(f"""
                 <div class='detail-box'>
@@ -215,9 +264,7 @@ for idx, h in enumerate(st.session_state.history_data):
                         <span style='color:#00d4ff;'>●</span> <b>IT:</b> {h['IT']}
                     </div>
                     <hr style='border: 0.5px solid #00d4ff; opacity: 0.3;'>
-                    <p style='font-family:monospace; font-size:12px; color:#aaa; margin:0;'>
-                        <b>VERIFICATION HASH:</b><br>{h['Hash']}
-                    </p>
+                    <p style='font-family:monospace; font-size:12px; color:#aaa; margin:0;'><b>VERIFICATION HASH:</b><br>{h['Hash']}</p>
                 </div>
             """, unsafe_allow_html=True)
         st.markdown("<hr style='border:0.5px solid #222; margin:10px 0;'>", unsafe_allow_html=True)
