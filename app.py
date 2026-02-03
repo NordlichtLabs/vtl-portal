@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 import time
 
-# --- 1. INITIALISIERUNG (Gegen AttributeError) ---
+# --- 1. INITIALISIERUNG ---
 if 'selected_hist_idx' not in st.session_state:
     st.session_state.selected_hist_idx = None
 if 'registered_salts' not in st.session_state:
@@ -43,11 +43,9 @@ st.markdown("""
         border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px;
     }
     .status-locked { color: #ff4b4b; font-weight: bold; }
-    .entropy-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 10px; }
+    .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
     .certificate h3, .certificate p, .certificate b { color: #000000 !important; }
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
-    
-    /* Schriftanpassung für Historie */
     .hist-hash-text { font-size: 14px; font-family: sans-serif; }
     </style>
     """, unsafe_allow_html=True)
@@ -74,6 +72,9 @@ if choice == "VTL Generator":
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
         raw_salt = st.text_input("Protocol-Salt", placeholder="Geben Sie den Salt zur Versiegelung ein...")
         
+        # HINWEIS FÜR DEN SALT
+        st.markdown('<p class="info-hint">Einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt und Manipulationen durch Vorabberechnung ausschließt.</p>', unsafe_allow_html=True)
+        
         if st.button("Salt im Vault registrieren"):
             if raw_salt.strip():
                 salt_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
@@ -99,14 +100,14 @@ if choice == "VTL Generator":
         l_de = entropy_row("Quellwerte (DE)", "07, 14, 22, 31, 44, 49", "de")
         l_at = entropy_row("Quellwerte (AT)", "02, 18, 24, 33, 41, 45", "at")
         l_it = entropy_row("Quellwerte (IT)", "11, 23, 35, 56, 62, 88", "it")
-        st.markdown('<p class="entropy-hint">Hinweis: Die Quellwerte werden erst im Anschluss an die Ziehung angezeigt</p>', unsafe_allow_html=True)
+        st.markdown('<p class="info-hint">Hinweis: Die Quellwerte werden erst im Anschluss an die Ziehung angezeigt</p>', unsafe_allow_html=True)
         
         m_entropy = f"{l_de}-{l_at}-{l_it}-{today_str}"
         p_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
     st.write("---")
     st.header("🧮 Deterministische Generierung")
-    r_c1, r_c2, r_c3 = st.columns(3) # Korrektur der Spaltenbenennung
+    r_c1, r_c2, r_c3 = st.columns(3)
     with r_c1: count = st.number_input("Anzahl der Werte", min_value=1, value=5)
     with r_c2: min_v = st.number_input("Untergrenze", value=1)
     with r_c3: max_v = st.number_input("Obergrenze", value=100)
@@ -138,7 +139,7 @@ if choice == "VTL Generator":
                     <p style='text-align:center; font-size:18px; font-weight:bold;'>{res_str}</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📥 Zertifikat herunterladen", f"VTL Audit Report\nEntity: {c_name}\nHash: {p_hash}\nValues: {res_str}", f"VTL_Cert_{p_id}.txt")
+                st.download_button("📥 Zertifikat herunterladen", f"VTL Audit Report\nEntity: {c_name}\nHash: {p_hash}\nGenerated Values: {res_str}", f"VTL_Cert_{p_id}.txt")
         else:
             st.error("❌ Bitte versiegeln Sie zuerst einen Protocol-Salt im Vault!")
 
@@ -153,8 +154,6 @@ elif choice == "Public Validator":
                 st.success("✅ INTEGRITÄT VERIFIZIERT")
                 st.balloons()
                 st.info("Dieses Zertifikat entspricht exakt den hinterlegten Entropie-Quellen.")
-                
-                # Hinzufügen sinnvoller Prüf-Details
                 st.markdown(f"""
                 **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
                 - **Zeitstempel-Integrität:** Übereinstimmung mit Block-Time bestätigt.
