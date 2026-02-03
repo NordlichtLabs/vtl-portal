@@ -1,3 +1,6 @@
+
+
+
 import hashlib
 import time
 from datetime import datetime
@@ -97,7 +100,7 @@ st.subheader("Der VTL-Prozess")
 hiw1, hiw2, hiw3, hiw4 = st.columns(4)
 steps = [("1.", "Versiegelung", "Der Protocol-Salt wird im VTL Vault zeitgestempelt versiegelt."),
          ("2.", "Fixierung", "Lotto-Daten werden als Entropy-Hash unveränderbar registriert."),
-         ("3.", "Kopplung", "Protocol-Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
+         ("3.", "Kopplung", "Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
          ("4.", "Output", "Aus dem Master-Hash entstehen beweisbare Zahlen.")]
 for i, step in enumerate(steps):
     with [hiw1, hiw2, hiw3, hiw4][i]:
@@ -111,30 +114,30 @@ with col_v:
     st.header("🔐 Security Vault")
     p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
     st.markdown('Protocol-Salt <span style="color:#ff4b4b; font-weight:bold;">*</span>', unsafe_allow_html=True)
-    raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Protocol-Salt ein...", label_visibility="collapsed")
+    raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt ein...", label_visibility="collapsed")
     
     with st.expander("💡 Was ist der Protocol-Salt? (Beispiel)"):
         st.markdown("""
             Der **Protocol-Salt** ist Ihr persönlicher „Fingerabdruck“ im System. Er garantiert, dass Ergebnisse individuell berechnet werden und vorab nicht manipuliert werden können.
             
             **Das Tresor-Prinzip:**
-            1. **Versiegelung:** Bevor die Lottozahlen (die externe Entropie) gezogen werden, legen Sie Ihren geheimen Protocol-Salt (z. B. das Wort `Sicherheit2026`) in unseren digitalen Tresor.
-            2. **Zeitstempel:** Das System quittiert: „Der Protocol-Salt wurde um 14:00 Uhr versiegelt.“
+            1. **Versiegelung:** Bevor die Lottozahlen (die externe Entropie) gezogen werden, legen Sie Ihren geheimen Salt (z. B. das Wort `Sicherheit2026`) in unseren digitalen Tresor.
+            2. **Zeitstempel:** Das System quittiert: „Der Salt wurde um 14:00 Uhr versiegelt.“
             3. **Die Ziehung:** Um 20:00 Uhr werden die offiziellen Lottozahlen gezogen (z. B. `7, 14, 23...`).
             4. **Die Kopplung:** VTL berechnet nun: `[7, 14, 23] + [Sicherheit2026] = Ihr Ergebnis`.
             
-            **Beweis:** Da Ihr Protocol-Salt bereits feststand, als die Zahlen noch unbekannt waren, ist eine nachträgliche Manipulation mathematisch ausgeschlossen.
+            **Beweis:** Da Ihr Salt bereits feststand, als die Zahlen noch unbekannt waren, ist eine nachträgliche Manipulation mathematisch ausgeschlossen.
         """)
     
     btn_c, tim_c = st.columns([2, 1])
     with btn_c:
-        if st.button("Protocol-Salt im Vault registrieren"):
+        if st.button("Salt im Vault registrieren"):
             if not raw_salt.strip():
                 st.error("Bitte geben sie zuerst den Protocol-Salt ein!")
             else:
                 now = datetime.now().strftime("%H:%M:%S")
                 s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
-                st.session_state.registered_salts.append({"Hash": s_hash, "Protocol-Salt": raw_salt, "Zeit": now})
+                st.session_state.registered_salts.append({"Hash": s_hash, "Salt": raw_salt, "Zeit": now})
                 st.rerun()
     with tim_c:
         if st.session_state.registered_salts:
@@ -161,8 +164,8 @@ st.write("---")
 st.header("🧮 Generator")
 gc1, gc2, gc3 = st.columns(3)
 count = gc1.number_input("Anzahl", min_value=1, value=5)
-min_v = gc2.number_input("Von", value=1)
-max_v = gc3.number_input("Bis", value=100)
+min_v = gc2.number_input("Untergrenze", value=1)
+max_v = gc3.number_input("Obergrenze", value=100)
 
 if st.button("Zahlen & Zertifikat berechnen"):
     if st.session_state.registered_salts:
@@ -172,14 +175,14 @@ if st.button("Zahlen & Zertifikat berechnen"):
         results = [(int(hashlib.sha256(f"{m_hash}-{i}".encode()).hexdigest(), 16) % (max_v - min_v + 1)) + min_v for i in range(1, count + 1)]
         
         st.session_state.current_cert = {
-            "flow": f"<div class='process-flow'><span style='color:#00d4ff'>Entropy-Hash</span> ({e_hash[:8]}...) <b>+</b> <span style='color:#ff00ff'>Salt</span> ({curr['Salt']}) <b>=</b> <span style='font-weight:bold'>Master-Hash</span> ({m_hash[:12]}...)</div>",
+            "flow": f"<div class='process-flow'><span style='color:#00d4ff'>Entropy-Hash</span> ({e_hash[:8]}...) <b>+</b> <span style='color:#ff00ff'>Protocol-Salt</span> ({curr['Salt']}) <b>=</b> <span style='font-weight:bold'>Master-Hash</span> ({m_hash[:12]}...)</div>",
             "results_str": ", ".join(map(str, results)),
             "m_hash": m_hash,
             "table": pd.DataFrame({"Wert": results}, index=range(1, count+1)),
             "p_id": p_id, "date": today, "entropy_all": f"{l_de} | {l_at} | {l_it}", "salt": curr['Salt'], "salt_time": curr['Zeit']
         }
         st.session_state.last_m_hash = m_hash
-    else: st.error("Bitte geben Sie zuerst den Protocol-Salt ein!")
+    else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
 
 if st.session_state.current_cert:
     c = st.session_state.current_cert
@@ -189,14 +192,14 @@ if st.session_state.current_cert:
     with rr:
         st.markdown(f"""<div class='certificate'><div class='cert-logo'>🛡️</div><div style='position:absolute; bottom:20px; right:20px; border:3px double #28a745; color:#28a745; padding:5px 10px; font-weight:bold; transform:rotate(-15deg); border-radius:5px;'>VTL VERIFIED</div><div class='cert-title'>VTL AUDIT CERTIFICATE</div><div class='cert-label'>Reference-ID & Date</div><div class='cert-value'>{c['p_id']} | {c['date']}</div><div class='cert-label'>Entropy Sources (DE/AT/IT)</div><div class='cert-value'>{c['entropy_all']}</div><div class='cert-label'>Protocol-Salt (Sealed)</div><div class='cert-value'>{c['salt']} (Versiegelt um {c['salt_time']})</div><div class='cert-label'>Kryptografischer Master-Hash</div><div class='cert-value' style='font-size:12px; font-family: monospace;'>{c['m_hash']}</div><hr style='border: 1px solid #ddd;'><div class='cert-label' style='text-align:center;'>Final Verifiable Results</div><p style='text-align:center; font-size:32px; font-weight:bold; margin-top:10px; color:#000;'>{c['results_str']}</p></div>""", unsafe_allow_html=True)
         
-        st.download_button(label="📄 Download Certificate (.pdf)", data=f"VTL AUDIT REPORT\nID: {c['p_id']}\nHASH: {c['m_hash']}\nRESULTS: {c['results_str']}", file_name=f"VTL_Cert_{c['p_id']}.txt")
+        st.download_button(label="📄 Download Certificate (.txt)", data=f"VTL AUDIT REPORT\nID: {c['p_id']}\nHASH: {c['m_hash']}\nRESULTS: {c['results_str']}", file_name=f"VTL_Cert_{c['p_id']}.txt")
 
 st.write("---")
 
 # --- 8. VALIDATOR ---
 st.header("🔍 Public Validator")
-st.markdown("""<div style="font-size:24px; font-weight:bold; color:#00d4ff; margin-bottom:10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div><div style="font-size:18px; color:#ffffff; line-height:1.5; max-width:1000px; margin-bottom:20px;">Sobald Sie ihren den Master-Hash aus dem VTL Audit Certificate eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, wird die Integrität bestätigt.</div>""", unsafe_allow_html=True)
-v_hash = st.text_input("Master-Hash aus dem VTL Audit Certificate zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
+st.markdown("""<div style="font-size:24px; font-weight:bold; color:#00d4ff; margin-bottom:10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div><div style="font-size:18px; color:#ffffff; line-height:1.5; max-width:1000px; margin-bottom:20px;">Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, wird die Integrität bestätigt.</div>""", unsafe_allow_html=True)
+v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
 if st.button("Integrität prüfen"):
     if v_hash:
         with st.spinner('Validierung...'):
