@@ -25,7 +25,6 @@ st.markdown("""
     .stButton>button { width: 100%; background-color: #004a99; color: white; font-weight: bold; border-radius: 8px; border: none; height: 45px; }
     .stDownloadButton>button { background-color: #28a745 !important; color: white !important; }
     
-    /* Zertifikat-Styling */
     .certificate { 
         border: 2px solid #000; padding: 25px; border-radius: 10px; 
         background-color: #ffffff; color: #000000;
@@ -46,7 +45,6 @@ st.markdown("""
     .status-locked { color: #ff4b4b; font-weight: bold; }
     .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
     
-    /* Validator-Info ohne Box */
     .validator-info {
         border-left: 5px solid #004a99;
         padding-left: 15px;
@@ -90,32 +88,15 @@ st.write("---")
 # HOW IT WORKS SEKTION
 st.subheader("How it works")
 hiw_col1, hiw_col2, hiw_col3 = st.columns(3)
-
 with hiw_col1:
     st.markdown("### 1. Entropie fixieren")
     st.write("Das System nutzt unvorhersehbare Echtzeit-Daten (wie Lottozahlen) als Basis. Da diese Werte erst in der Zukunft feststehen, kann niemand das Ergebnis manipulieren.")
-
 with hiw_col2:
     st.markdown("### 2. Vault-Versiegelung")
     st.write("Durch den individuellen Protocol-Salt wird die Berechnung 'gesalzen'. Dies verhindert, dass Dritte Ergebnisse vorab berechnen oder Muster erkennen.")
-
 with hiw_col3:
     st.markdown("### 3. Mathematischer Beweis")
     st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder Bürger jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
-
-st.write("---")
-
-# CLEAN MARKETING MESSAGE (WEISSE SCHRIFT, KEINE BOX)
-st.markdown("""
-    <div style="margin-bottom: 40px; margin-top: 10px;">
-        <h2 style="color: #ffffff; margin-bottom: 15px;">„Don't Trust, Verify“</h2>
-        <p style="font-size: 20px; line-height: 1.6; color: #ffffff; max-width: 1000px;">
-            In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
-            VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
-            dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
 
 st.write("---")
 
@@ -193,14 +174,13 @@ if choice == "VTL Generator":
                     <p style='text-align:center; font-size:18px; font-weight:bold;'>{res_str}</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📥 Zertifikat herunterladen", f"VTL Audit Report\nEntity: {c_name}\nHash: {p_hash}\nGenerated Values: {res_str}", f"VTL_Cert_{p_id}.txt")
+                st.download_button("📥 Zertifikat herunterladen", f"VTL Audit Report\nEntity: {c_name}\nHash: {p_hash}\nValues: {res_str}", f"VTL_Cert_{p_id}.txt")
         else:
             st.error("❌ Bitte versiegeln Sie zuerst einen Protocol-Salt im Vault!")
 
 # --- 6. PUBLIC VALIDATOR ---
 elif choice == "Public Validator":
     st.title("🔍 Public Validator")
-    
     st.markdown("""
     <div class="validator-info">
         <b>Wahrheit durch Mathematik:</b> Der Public Validator ist die unabhängige Prüfinstanz für Endnutzer. 
