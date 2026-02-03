@@ -55,42 +55,38 @@ st.markdown("""
     .web2-box { border-color: #00d4ff; }
     .web3-box { border-color: #ff00ff; }
 
-    /* Fix für einheitliche Prozess-Karten */
+    /* Einheitliche Prozess-Karten */
     .hiw-card { 
         background-color: rgba(0, 74, 153, 0.15); 
-        padding: 20px; 
+        padding: 25px; 
         border-radius: 12px; 
         border: 1px solid #004a99;
-        height: 180px; /* Feste Höhe für Symmetrie */
+        min-height: 220px; /* Einheitliche Höhe für alle Boxen */
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
     }
     
-    /* Zertifikat kompakter gestaltet */
+    /* Zertifikat Styling */
     .certificate { 
-        border: 2px solid #000; 
-        padding: 20px 30px; 
-        border-radius: 10px; 
-        background-color: #ffffff; 
-        color: #000000; 
-        font-family: 'Courier New', monospace; 
-        position: relative; 
-        box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
-        max-width: 550px; /* Kompakteres Format */
-        margin: auto;
+        border: 2px solid #000; padding: 35px; border-radius: 10px; background-color: #ffffff; color: #000000; 
+        font-family: 'Courier New', monospace; position: relative; box-shadow: 0 0 40px rgba(0, 212, 255, 0.4); 
     }
-    .cert-label { font-weight: bold; font-size: 11px; color: #555; text-transform: uppercase; margin-top: 8px; }
-    .cert-value { font-size: 13px; margin-bottom: 8px; word-break: break-all; color: #000; }
-    .cert-title { font-size: 20px; font-weight: bold; text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 15px; }
+    .cert-label { font-weight: bold; font-size: 13px; color: #555; text-transform: uppercase; margin-top: 12px; }
+    .cert-value { font-size: 16px; margin-bottom: 12px; word-break: break-all; color: #000; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- 3. HEADER & INTRO ---
 st.title("🛡️ Verifiable Truth Layer (VTL)")
+st.markdown("""<div style="color: #ffffff; font-size: 18px; line-height: 1.5; margin-bottom: 20px;">Das Problem herkömmlicher Zufallsgeneratoren: Ein digitales Blindvertrauen. Die meisten heutigen Systeme zur Zufallszahlengenerierung sind eine <b>Blackbox</b>. Ohne beweisbare Integrität bleibt jede digitale Entscheidung eine Vertrauensfrage.</div>""", unsafe_allow_html=True)
+
+uc1, uc2 = st.columns(2)
+with uc1: st.markdown('<div class="use-case-box web2-box"><div style="color:#00d4ff; font-weight:bold; font-size:22px;">Use Cases: Web2</div><ul style="font-size:17px; line-height:1.8; list-style:none; padding:0;"><li>🎲 <b>Verlosungen:</b> Beweisbare Fairness.</li><li>🏦 <b>Banken-Audits:</b> Compliance-Stichproben.</li></ul></div>', unsafe_allow_html=True)
+with uc2: st.markdown('<div class="use-case-box web3-box"><div style="color:#ff00ff; font-weight:bold; font-size:22px;">Use Cases: Web3</div><ul style="font-size:17px; line-height:1.8; list-style:none; padding:0;"><li>🖼️ <b>NFT-Minting:</b> Zufällige Trait-Zuweisung.</li><li>🗳️ <b>DAO:</b> Validatoren-Auswahl.</li></ul></div>', unsafe_allow_html=True)
+
 st.write("---")
 
-# --- 4. PROZESS (FIXED SIZE) ---
+# --- 4. PROZESS (Einheitliche Größen & Originaltexte) ---
 st.subheader("Der VTL-Prozess")
 hiw1, hiw2, hiw3, hiw4 = st.columns(4)
 steps = [
@@ -99,10 +95,9 @@ steps = [
     ("3.", "Kopplung", "Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
     ("4.", "Output", "Aus dem Master-Hash entstehen beweisbare Zahlen.")
 ]
-cols = [hiw1, hiw2, hiw3, hiw4]
 for i, step in enumerate(steps):
-    with cols[i]:
-        st.markdown(f'<div class="hiw-card"><div style="color:#00d4ff; font-size:24px; font-weight:bold;">{step[0]}</div><b style="font-size:16px;">{step[1]}</b><div style="font-size:14px; margin-top:10px;">{step[2]}</div></div>', unsafe_allow_html=True)
+    with [hiw1, hiw2, hiw3, hiw4][i]:
+        st.markdown(f'<div class="hiw-card"><div style="color:#00d4ff; font-size:28px; font-weight:bold;">{step[0]}</div><b style="font-size:18px;">{step[1]}</b><br><br>{step[2]}</div>', unsafe_allow_html=True)
 
 st.write("---")
 
@@ -110,7 +105,7 @@ st.write("---")
 cv, ce = st.columns(2)
 with cv:
     st.header("🔐 Security Vault")
-    raw_salt = st.text_input("Protocol-Salt", placeholder="Geben Sie Ihren geheimen Salt ein...")
+    raw_salt = st.text_input("Protocol-Salt", placeholder="Salt eingeben...")
     if st.button("Salt im Vault registrieren"):
         if raw_salt:
             now = datetime.now().strftime("%H:%M:%S")
@@ -118,7 +113,7 @@ with cv:
             st.rerun()
     if st.session_state.registered_salts:
         ls = st.session_state.registered_salts[-1]
-        st.success(f"Status: SEALED | Zeit: {ls['Zeit']}")
+        st.info(f"Status: SEALED | Zeit: {ls['Zeit']}")
 
 with ce:
     st.header("🎰 Entropy Source")
@@ -126,10 +121,8 @@ with ce:
     l_at = st.text_input("Werte AT", "02, 18, 24, 33, 41, 45")
     l_it = st.text_input("Werte IT", "11, 23, 35, 56, 62, 88")
 
-st.write("---")
-
-# --- 6. GENERATOR ---
-if st.button("Audit-Zertifikat & Zahlen berechnen"):
+# --- 6. GENERATOR & PDF DOWNLOAD ---
+if st.button("Audit-Zertifikat berechnen"):
     if st.session_state.registered_salts:
         curr = st.session_state.registered_salts[-1]
         today = datetime.now().strftime("%d.%m.%Y")
@@ -141,27 +134,11 @@ if st.button("Audit-Zertifikat & Zahlen berechnen"):
             "p_id": "SEC-AUDIT-Q1", "date": today, "entropy_all": f"{l_de} | {l_at} | {l_it}",
             "salt": curr['Salt'], "salt_time": curr['Zeit'], "m_hash": m_hash, "results_str": ", ".join(results)
         }
-    else:
-        st.error("Bitte zuerst einen Salt im Vault registrieren!")
+        st.session_state.last_m_hash = m_hash
 
 if st.session_state.current_cert:
     c = st.session_state.current_cert
-    st.markdown(f"""
-        <div class='certificate'>
-            <div class='cert-title'>VTL AUDIT CERTIFICATE</div>
-            <div class='cert-label'>Reference-ID & Date</div>
-            <div class='cert-value'>{c['p_id']} | {c['date']}</div>
-            <div class='cert-label'>Entropy Sources</div>
-            <div class='cert-value'>{c['entropy_all']}</div>
-            <div class='cert-label'>Protocol-Salt (Sealed)</div>
-            <div class='cert-value'>{c['salt']} (Zeit: {c['salt_time']})</div>
-            <div class='cert-label'>Master-Hash</div>
-            <div class='cert-value' style='font-size:10px;'>{c['m_hash']}</div>
-            <hr style='border: 0.5px solid #ddd; margin: 10px 0;'>
-            <p style='text-align:center; font-size:24px; font-weight:bold; color:#000; margin:0;'>{c['results_str']}</p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div class='certificate'><div class='cert-title'>VTL AUDIT CERTIFICATE</div><div class='cert-label'>Reference-ID & Date</div><div class='cert-value'>{c['p_id']} | {c['date']}</div><div class='cert-label'>Entropy Sources</div><div class='cert-value'>{c['entropy_all']}</div><div class='cert-label'>Protocol-Salt (Sealed)</div><div class='cert-value'>{c['salt']} (Zeit: {c['salt_time']})</div><div class='cert-label'>Master-Hash</div><div class='cert-value' style='font-size:12px;'>{c['m_hash']}</div><hr><p style='text-align:center; font-size:28px; font-weight:bold; color:#000;'>{c['results_str']}</p></div>""", unsafe_allow_html=True)
     
-    # PDF Download Button unter dem Zertifikat
     pdf_bytes = create_pdf(c)
     st.download_button(label="📥 Download Audit Certificate (.pdf)", data=pdf_bytes, file_name=f"VTL_Audit_{c['date']}.pdf", mime="application/pdf")
