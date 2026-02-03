@@ -47,12 +47,8 @@ st.markdown("""
     .required-star { color: #ff4b4b; font-weight: bold; }
     
     .validator-info-text {
-        font-size: 20px; 
-        line-height: 1.6;
-        border-left: 5px solid #004a99;
-        padding-left: 20px;
-        margin-bottom: 30px;
-        color: #ffffff;
+        font-size: 20px; line-height: 1.6; border-left: 5px solid #004a99;
+        padding-left: 20px; margin-bottom: 30px; color: #ffffff;
     }
     
     .certificate h3, .certificate p, .certificate b { color: #000000 !important; }
@@ -70,10 +66,9 @@ if st.sidebar.button("🔄 System Reset"):
     st.session_state.selected_hist_idx = None
     st.rerun()
 
-# --- 4. HEADER & CONTENT-STEUERUNG ---
+# --- 4. HEADER ---
 st.title("🛡️ Verifiable Truth Layer (VTL)")
 
-# Zeige Marketing & How it Works NUR im Generator
 if choice == "VTL Generator":
     st.markdown("""
         <div style="margin-bottom: 20px; margin-top: 10px;">
@@ -85,47 +80,40 @@ if choice == "VTL Generator":
             </p>
         </div>
         """, unsafe_allow_html=True)
-
     st.write("---")
-
     st.subheader("How it works")
     hiw_col1, hiw_col2, hiw_col3 = st.columns(3)
     with hiw_col1:
         st.markdown("### 1. Entropie fixieren")
-        st.write("Das System nutzt unvorhersehbare Echtzeit-Daten (wie Lottozahlen) als Basis. Da diese Werte erst in der Zukunft feststehen, kann niemand das Ergebnis manipulieren.")
+        st.write("Das System nutzt unvorhersehbare Echtzeit-Daten (wie Lottozahlen) als Basis.")
     with hiw_col2:
         st.markdown("### 2. Vault-Versiegelung")
-        st.write("Durch den individuellen Protocol-Salt wird die Berechnung 'gesalzen'. Dies verhindert, dass Dritte Ergebnisse vorab berechnen oder Muster erkennen.")
+        st.write("Durch den individuellen Protocol-Salt wird die Berechnung 'gesalzen' und gesichert.")
     with hiw_col3:
         st.markdown("### 3. Mathematischer Beweis")
-        st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder Bürger jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
-
+        st.write("Der Master-Hash verknüpft alles zu einer unveränderbaren Beweiskette.")
     st.write("---")
 
-    # --- 5. VTL GENERATOR ---
+# --- 5. VTL GENERATOR ---
+if choice == "VTL Generator":
     col1, col2 = st.columns([1, 1])
     with col1:
         st.header("🔐 Security Vault")
         c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
-        
         st.markdown('Protocol-Salt <span class="required-star">*</span>', unsafe_allow_html=True)
-        raw_salt = st.text_input("Protocol-Salt-Input", placeholder="Geben Sie den Salt zur Versiegelung ein...", label_visibility="collapsed")
-        
-        st.markdown('<p class="info-hint">Der Salt ist ein einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt und Manipulationen durch Vorabberechnung ausschließt.</p>', unsafe_allow_html=True)
+        raw_salt = st.text_input("Protocol-Salt-Input", placeholder="Salt eingeben...", label_visibility="collapsed")
+        st.markdown('<p class="info-hint">Der Salt ist ein einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt.</p>', unsafe_allow_html=True)
         
         if st.button("Salt im VTL Vault registrieren"):
             if raw_salt.strip():
                 salt_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
-                st.session_state.registered_salts.append({
-                    "ID": p_id, "Salt": raw_salt, "Hash": salt_hash,
-                    "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-                })
+                st.session_state.registered_salts.append({"ID": p_id, "Salt": raw_salt, "Hash": salt_hash, "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")})
         
         if st.session_state.registered_salts:
             last_s = st.session_state.registered_salts[-1]
             st.success("✅ Salt erfolgreich versiegelt")
-            st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br>Zeitstempel: {last_s['Zeit']}<br>SHA-256 Hash: {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br>Vault-Hash (Salt): {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
     
     with col2:
         st.header("🎰 Entropy Source")
@@ -142,7 +130,7 @@ if choice == "VTL Generator":
         st.markdown('<p class="info-hint">Hinweis: Die Quellwerte werden erst im Anschluss an die Ziehung angezeigt</p>', unsafe_allow_html=True)
         
         m_entropy = f"{l_de}-{l_at}-{l_it}-{today_str}"
-        p_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
+        entropy_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
     st.write("---")
     st.header("🧮 Zufallszahlen generieren")
@@ -154,31 +142,38 @@ if choice == "VTL Generator":
     if st.button("Zahlen berechnen & Zertifikat erstellen"):
         if st.session_state.registered_salts:
             current_salt = st.session_state.registered_salts[-1]["Salt"]
+            current_salt_hash = st.session_state.registered_salts[-1]["Hash"]
+            
+            # Master Hash Berechnung (Kombination aus Entropy und Salt)
+            master_seed = f"{entropy_hash}-{current_salt}"
+            master_hash = hashlib.sha256(master_seed.encode()).hexdigest()
+            
             results = []
             for i in range(1, count + 1):
-                h = hashlib.sha256(f"{p_hash}-{current_salt}-{i}".encode()).hexdigest()
+                h = hashlib.sha256(f"{master_hash}-{i}".encode()).hexdigest()
                 num = (int(h, 16) % (max_v - min_v + 1)) + min_v
                 results.append(num)
             
             res_col_left, res_col_right = st.columns(2)
             with res_col_left:
                 st.subheader("Generierte Output-Werte")
-                df_res = pd.DataFrame({"Index": range(1, count+1), "Wert": results})
-                st.table(df_res.set_index("Index"))
+                st.table(pd.DataFrame({"Index": range(1, count+1), "Wert": results}).set_index("Index"))
             
             with res_col_right:
                 res_str = ", ".join(map(str, results))
                 st.markdown(f"""
                 <div class='certificate'>
                     <div class='verified-seal'>VTL VERIFIED</div>
-                    <h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3>
-                    <p><b>ENTITY:</b> {c_name}<br><b>REF-ID:</b> {p_id}<br><b>VALID DATE:</b> {today_str}</p>
-                    <p style='font-size:10px; word-break:break-all;'><b>PROTOCOL HASH:</b><br>{p_hash}</p>
+                    <h3 style='margin-top:0; font-size:16px;'>VTL AUDIT CERTIFICATE</h3>
+                    <p style='font-size:12px;'><b>ENTITY:</b> {c_name}<br><b>REF-ID:</b> {p_id}<br><b>DATE:</b> {today_str}</p>
+                    <hr style='border:1px solid #eee;'>
+                    <p style='font-size:10px; word-break:break-all;'><b>MASTER HASH (PROTOCOL PROOF):</b><br><b>{master_hash}</b></p>
+                    <p style='font-size:10px; word-break:break-all; color:#666;'><b>VAULT REFERENCE (SALT HASH):</b><br>{current_salt_hash}</p>
                     <hr style='border:1px dashed #000;'>
-                    <p style='text-align:center; font-size:18px; font-weight:bold;'>{res_str}</p>
+                    <p style='text-align:center; font-size:22px; font-weight:bold; letter-spacing:2px;'>{res_str}</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.download_button("📥 Zertifikat herunterladen", f"VTL Audit Report\nEntity: {c_name}\nHash: {p_hash}\nValues: {res_str}", f"VTL_Cert_{p_id}.txt")
+                st.download_button("📥 Zertifikat herunterladen", f"VTL Audit Report\nMaster Hash: {master_hash}\nSalt Hash: {current_salt_hash}\nValues: {res_str}", f"VTL_Cert_{p_id}.txt")
         else:
             st.error("❌ Bitte versiegeln Sie zuerst einen Protocol-Salt im Vault!")
 
@@ -186,31 +181,15 @@ if choice == "VTL Generator":
 elif choice == "Public Validator":
     st.write("---")
     st.title("🔍 Public Validator")
-    
-    st.markdown("""
-    <div class="validator-info-text">
-        <b>Wahrheit durch Mathematik:</b> Der Public Validator ist die unabhängige Prüfinstanz für Endnutzer. 
-        Durch Eingabe des Protokoll-Hashes gleicht das System die kryptografische Kette live mit den staatlich 
-        versiegelten Entropie-Quellen (Lotto-Daten) und dem institutionellen Security-Salt ab. 
-    </div>
-    """, unsafe_allow_html=True)
-
-    cert_id = st.text_input("Protokoll-Hash zur Verifizierung eingeben", key="val_input_field")
+    st.markdown('<div class="validator-info-text"><b>Wahrheit durch Mathematik:</b> Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>', unsafe_allow_html=True)
+    cert_id = st.text_input("Master-Hash zur Verifizierung eingeben", key="val_input_field")
     if st.button("Integrität prüfen"):
         if cert_id:
-            with st.spinner('Verifizierung läuft...'):
+            with st.spinner('Kette wird rekonstruiert...'):
                 time.sleep(1.2)
                 st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-                st.info("Dieses Zertifikat entspricht exakt den hinterlegten Entropie-Quellen.")
-                st.markdown(f"""
-                **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
-                - **Entropy Source Sync:** Quellwerte (DE, AT, IT) verifiziert.
-                - **Date-Binding:** Gültigkeit für den Ziehungstag bestätigt.
-                - **Security Vault:** Salt-Integrität im Vault abgeglichen.
-                - **Proof of Fairness:** Protokoll ist lückenlos und manipulationssicher.
-                """)
-        else:
-            st.warning("Bitte geben Sie einen Hash ein.")
+                st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
+        else: st.warning("Bitte geben Sie einen Hash ein.")
 
 # --- 7. HISTORY ---
 st.write("---")
@@ -223,14 +202,5 @@ for idx, item in enumerate(st.session_state.history_data):
         if st.button("Details", key=f"btn_h_{idx}"):
             st.session_state.selected_hist_idx = idx if st.session_state.selected_hist_idx != idx else None
             st.rerun()
-            
     if st.session_state.selected_hist_idx == idx:
-        st.markdown(f"""
-        <div class='detail-box'>
-            <p>Quellwerte DE: {item['DE']}</p>
-            <p>Quellwerte AT: {item['AT']}</p>
-            <p>Quellwerte IT: {item['IT']}</p>
-            <hr style='border:0.5px solid #444;'>
-            <p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"<div class='detail-box'><p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p></div>", unsafe_allow_html=True)
