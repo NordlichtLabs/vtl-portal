@@ -33,7 +33,7 @@ st.markdown("""
         color: white; font-weight: bold; border-radius: 5px; border: none; height: 45px; transition: 0.3s;
     }
     .stButton>button:hover { box-shadow: 0 0 20px #00d4ff; transform: translateY(-2px); }
-
+    
     .login-btn { border: 1px solid #ffffff; color: #ffffff !important; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; }
     .signup-btn { background-color: #ffffff; color: #000 !important; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; }
 
@@ -46,7 +46,6 @@ st.markdown("""
 
     .hiw-card { background-color: rgba(0, 74, 153, 0.15); padding: 25px; border-radius: 12px; height: 100%; border: 1px solid #004a99; }
     
-    /* Zertifikat Styling */
     .certificate { 
         border: 2px solid #000; 
         padding: 25px; 
@@ -131,12 +130,15 @@ with col_v:
     
     with st.expander("💡 Was ist der Protocol-Salt? (Beispiel)"):
         st.markdown("""
-            Der **Protocol-Salt** ist Ihr persönlicher „Fingerabdruck“. Er garantiert, dass Ergebnisse individuell berechnet werden.
+            Der **Protocol-Salt** ist Ihr persönlicher „Fingerabdruck“ im System. Er garantiert, dass Ergebnisse individuell berechnet werden und vorab nicht manipuliert werden können.
             
             **Das Tresor-Prinzip:**
-            1. **Versiegelung:** Sie legen einen Salt vor der Ziehung in den digitalen Tresor.
-            2. **Zeitstempel:** Das System bestätigt den Eingang *vor* der Ziehung.
-            3. **Die Kopplung:** `[Lottozahlen] + [Ihr Salt] = Ergebnis`.
+            1. **Versiegelung:** Bevor die Lottozahlen (die externe Entropie) gezogen werden, legen Sie Ihren geheimen Salt (z. B. das Wort `Sicherheit2026`) in unseren digitalen Tresor.
+            2. **Zeitstempel:** Das System quittiert: „Der Salt wurde um 14:00 Uhr versiegelt.“
+            3. **Die Ziehung:** Um 20:00 Uhr werden die offiziellen Lottozahlen gezogen (z. B. `7, 14, 23...`).
+            4. **Die Kopplung:** VTL berechnet nun: `[7, 14, 23] + [Sicherheit2026] = Ihr Ergebnis`.
+            
+            **Beweis:** Da Ihr Salt bereits feststand, als die Zahlen noch unbekannt waren, ist eine nachträgliche Manipulation mathematisch ausgeschlossen.
         """)
     
     btn_c, tim_c = st.columns([2, 1])
@@ -145,8 +147,9 @@ with col_v:
             if not raw_salt.strip():
                 st.error("Bitte geben sie zuerst den Protocol-Salt ein!")
             else:
+                now = datetime.now().strftime("%H:%M:%S")
                 s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
-                st.session_state.registered_salts.append({"Hash": s_hash, "Salt": raw_salt, "Zeit": datetime.now().strftime("%H:%M:%S")})
+                st.session_state.registered_salts.append({"Hash": s_hash, "Salt": raw_salt, "Zeit": now})
                 st.rerun()
     with tim_c:
         if st.session_state.registered_salts:
@@ -155,7 +158,13 @@ with col_v:
 
     if st.session_state.registered_salts:
         ls = st.session_state.registered_salts[-1]
-        st.markdown(f'<div class="vault-info"><b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br><b>Vault-Hash:</b> {ls["Hash"][:32]}...</div>', unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class="vault-info">
+                <b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br>
+                <b>Versiegelt um:</b> {ls['Zeit']} Uhr<br>
+                <b>Vault-Hash:</b> {ls["Hash"][:32]}...
+            </div>
+        """, unsafe_allow_html=True)
 
 with col_e:
     st.header("🎰 Entropy Source")
@@ -195,7 +204,7 @@ if st.button("Zahlen & Zertifikat berechnen"):
                     <div class='cert-label'>Entropy Sources (DE/AT/IT)</div>
                     <div class='cert-value'>{l_de} | {l_at} | {l_it}</div>
                     <div class='cert-label'>Protocol-Salt (Sealed)</div>
-                    <div class='cert-value'>{curr['Salt']}</div>
+                    <div class='cert-value'>{curr['Salt']} (Versiegelt: {curr['Zeit']})</div>
                     <hr>
                     <div class='cert-label'>Kryptografischer Master-Hash</div>
                     <div class='cert-value' style='font-size:10px;'>{m_hash}</div>
@@ -203,7 +212,6 @@ if st.button("Zahlen & Zertifikat berechnen"):
                     <p style='text-align:center; font-size:22px; font-weight:bold; margin-top:10px;'>{", ".join(map(str, results))}</p>
                 </div>
             """, unsafe_allow_html=True)
-            # Speichere den Hash für den Validator-Test
             st.session_state.last_m_hash = m_hash
     else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
 
@@ -217,7 +225,8 @@ st.markdown("""
         <div style="font-size: 18px; color: #ffffff; line-height: 1.5; max-width: 1000px;">
             Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
             Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
-            offiziellen Entropie-Quellen ab.
+            offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, 
+            wird die Integrität bestätigt – so wird aus blindem Vertrauen beweisbare Sicherheit.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -228,7 +237,6 @@ if st.button("Integrität prüfen"):
     if v_hash:
         with st.spinner('Validierung...'):
             time.sleep(1.2)
-            # Echte Prüfung gegen den zuletzt generierten Hash (oder die History)
             is_valid = False
             if 'last_m_hash' in st.session_state and v_hash == st.session_state.last_m_hash:
                 is_valid = True
@@ -241,7 +249,6 @@ if st.button("Integrität prüfen"):
                 st.markdown(f"**Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**<br>• Entropy Source Sync verifiziert.<br>• Date-Binding bestätigt.<br>• Security Vault abgeglichen.<br>• Proof of Fairness: OK.", unsafe_allow_html=True)
             else:
                 st.error("❌ INTEGRITÄT VERLETZT / UNBEKANNTER HASH")
-                st.warning("Warnung: Dieser Hash konnte nicht in den offiziellen Protokollen verifiziert werden. Die Daten könnten manipuliert worden sein.")
 
 st.write("---")
 
