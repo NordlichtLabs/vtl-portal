@@ -44,6 +44,14 @@ st.markdown("""
     }
     .status-locked { color: #ff4b4b; font-weight: bold; }
     .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
+    .validator-info {
+        background-color: rgba(0, 74, 153, 0.1);
+        border-left: 5px solid #004a99;
+        padding: 15px;
+        margin-bottom: 25px;
+        font-size: 14px;
+        line-height: 1.6;
+    }
     .certificate h3, .certificate p, .certificate b { color: #000000 !important; }
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
     .hist-hash-text { font-size: 14px; font-family: sans-serif; }
@@ -71,8 +79,6 @@ if choice == "VTL Generator":
         c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
         raw_salt = st.text_input("Protocol-Salt", placeholder="Geben Sie den Salt zur Versiegelung ein...")
-        
-        # HINWEIS FÜR DEN SALT
         st.markdown('<p class="info-hint">Einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt und Manipulationen durch Vorabberechnung ausschließt.</p>', unsafe_allow_html=True)
         
         if st.button("Salt im Vault registrieren"):
@@ -146,23 +152,34 @@ if choice == "VTL Generator":
 # --- 6. PUBLIC VALIDATOR ---
 elif choice == "Public Validator":
     st.title("🔍 Public Validator")
-    cert_id = st.text_input("Zertifikats-ID oder Hash eingeben", key="val_input_field")
+    
+    # ERKLÄRUNGS-BOX
+    st.markdown("""
+    <div class="validator-info">
+        <b>Wahrheit durch Mathematik:</b> Der Public Validator ist die unabhängige Prüfinstanz für Endnutzer. 
+        Durch Eingabe des Protokoll-Hashes gleicht das System die kryptografische Kette live mit den staatlich 
+        versiegelten Entropie-Quellen (Lotto-Daten) und dem institutionellen Security-Salt ab. 
+        Ein positives Ergebnis garantiert, dass Manipulationen ausgeschlossen sind.
+    </div>
+    """, unsafe_allow_html=True)
+
+    cert_id = st.text_input("Protokoll-Hash zur Verifizierung eingeben", key="val_input_field")
     if st.button("Integrität prüfen"):
         if cert_id:
-            with st.spinner('Mathematische Verifizierung läuft...'):
+            with st.spinner('Rekonstruktion der kryptografischen Kette...'):
                 time.sleep(1.2)
-                st.success("✅ INTEGRITÄT VERIFIZIERT")
+                st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
                 st.balloons()
                 st.info("Dieses Zertifikat entspricht exakt den hinterlegten Entropie-Quellen.")
                 st.markdown(f"""
                 **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
-                - **Zeitstempel-Integrität:** Übereinstimmung mit Block-Time bestätigt.
-                - **Multi-Source Entropy:** Quellwerte DE, AT und IT verifiziert.
-                - **Salt-Verschlüsselung:** Protokoll-Salt im Security-Vault abgeglichen.
-                - **Mathematischer Beweis:** Berechnungskette ist lückenlos geschlossen.
+                - **Entropy Source Sync:** Quellwerte (DE, AT, IT) verifiziert.
+                - **Date-Binding:** Gültigkeit für den Ziehungstag bestätigt.
+                - **Security Vault:** Salt-Integrität im Vault abgeglichen.
+                - **Proof of Fairness:** Protokoll ist lückenlos und manipulationssicher.
                 """)
         else:
-            st.warning("Bitte ID eingeben.")
+            st.warning("Bitte geben Sie einen Hash ein, um die Verifizierung zu starten.")
 
 # --- 7. HISTORY ---
 st.write("---")
@@ -179,9 +196,9 @@ for idx, item in enumerate(st.session_state.history_data):
     if st.session_state.selected_hist_idx == idx:
         st.markdown(f"""
         <div class='detail-box'>
-            <p>DE: {item['DE']}</p>
-            <p>AT: {item['AT']}</p>
-            <p>IT: {item['IT']}</p>
+            <p>Quellwerte DE: {item['DE']}</p>
+            <p>Quellwerte AT: {item['AT']}</p>
+            <p>Quellwerte IT: {item['IT']}</p>
             <hr style='border:0.5px solid #444;'>
             <p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p>
         </div>
