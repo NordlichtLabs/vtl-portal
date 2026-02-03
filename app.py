@@ -44,6 +44,7 @@ st.markdown("""
     .vault-info { background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .status-locked { color: #ff4b4b; font-weight: bold; }
     .required-star { color: #ff4b4b; font-weight: bold; }
+    .info-hint { color: #aaaaaa; font-style: italic; font-size: 13px; margin-top: 5px; }
     
     .timer-container { border: 1px solid #ff4b4b; background-color: rgba(255, 75, 75, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff4b4b; }
     .timer-label { font-size: 9px; font-weight: bold; margin-bottom: -4px; letter-spacing: 0.5px; }
@@ -99,7 +100,6 @@ with col1:
     st.header("🔐 Security Vault")
     c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
     p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
-    # HIER: Roter Asterisk hinzugefügt
     st.markdown('Protocol-Salt <span class="required-star">*</span>', unsafe_allow_html=True)
     raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt zur Versiegelung ein...", label_visibility="collapsed")
     
@@ -140,7 +140,6 @@ with col1:
             """, unsafe_allow_html=True)
 
     if st.session_state.registered_salts:
-        # HIER: Schriftgröße um 1 erhöht (von 13px auf 15px)
         st.markdown("""
             <div style="font-size: 15px; color: #ffffff; margin-top: 15px; margin-bottom: 10px; line-height: 1.4;">
                 <b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr individueller Protokoll-Key muss vor der offiziellen Ziehung versiegelt sein. 
@@ -163,6 +162,10 @@ with col2:
     l_de = entropy_row("Quellwerte (DE)", "07, 14, 22, 31, 44, 49", "de")
     l_at = entropy_row("Quellwerte (AT)", "02, 18, 24, 33, 41, 45", "at")
     l_it = entropy_row("Quellwerte (IT)", "11, 23, 35, 56, 62, 88", "it")
+    
+    # HIER: Der Hinweis für die Entropie-Werte hinzugefügt
+    st.markdown('<p class="info-hint">Hinweis: Die Quellwerte werden erst im Anschluss an die Ziehung angezeigt.</p>', unsafe_allow_html=True)
+    
     m_entropy = f"{l_de}-{l_at}-{l_it}-{today_str}"
     e_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
