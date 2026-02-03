@@ -34,8 +34,8 @@ st.markdown("""
     .login-btn { background-color: transparent; border: 1px solid #ffffff; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; cursor: pointer; }
     .signup-btn { background-color: #ffffff; color: #2e2e2e; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; }
 
-    /* Problem Statement Styling */
-    .problem-description { color: #ffffff; font-style: italic; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 15px; }
+    /* Text-Bereiche */
+    .problem-description { color: #ffffff; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 20px; }
     .marketing-message { color: #ffffff; font-size: 20px; line-height: 1.6; max-width: 1000px; margin-bottom: 25px; }
 
     /* How it works Cards */
@@ -65,7 +65,7 @@ with head_col2:
     st.markdown('<div style="text-align: right; padding-top: 15px;"><a class="login-btn">Login</a><a class="signup-btn">Sign-up</a></div>', unsafe_allow_html=True)
 
 # --- 4. SIDEBAR ---
-choice = st.sidebar.radio("Navigation", ["VTL Generator", "Public Validator"])
+choice = st.sidebar.radio("Bereich wählen:", ["VTL Generator", "Public Validator"])
 if st.sidebar.button("🔄 System Reset"):
     st.session_state.registered_salts = []
     st.session_state.selected_hist_idx = None
@@ -73,17 +73,17 @@ if st.sidebar.button("🔄 System Reset"):
 
 # --- 5. CONTENT STEUERUNG ---
 if choice == "VTL Generator":
-    # Marketing & Problem Section
+    # Problembeschreibung -> Slogan -> Marketing Message
     st.markdown("""
-        <div style="margin-top: 12px;">
-            <h2 style="color: #ffffff !important; margin-bottom: 5px;">„Don't Trust, Verify“</h2>
+        <div style="margin-top: 20px;">
             <div class="problem-description">
                 Das Problem herkömmlicher Zufallsgeneratoren: Ein digitales Blindvertrauen. Die meisten heutigen Systeme zur Zufallszahlengenerierung sind eine <b>Blackbox</b>. 
                 Ob bei Gewinnspielen, Audits oder Zuteilungen – das Ergebnis wird hinter verschlossenen Türen berechnet. Für den Nutzer ist nicht nachvollziehbar, 
                 ob das Resultat wirklich dem Zufall entspringt oder im Nachhinein manipuliert wurde. Ohne beweisbare Integrität bleibt jede digitale Entscheidung 
                 eine Vertrauensfrage, kein mathematischer Fakt.
             </div>
-            <div class="marketing-message"> 
+            <h2 style="color: #ffffff !important; margin-bottom: 10px; margin-top: 20px;">„Don't Trust, Verify“</h2>
+            <div class="marketing-message">
                 VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
                 dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
             </div>
