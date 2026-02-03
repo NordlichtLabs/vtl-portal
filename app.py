@@ -44,6 +44,7 @@ st.markdown("""
     }
     .status-locked { color: #ff4b4b; font-weight: bold; }
     .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
+    .required-star { color: #ff4b4b; font-weight: bold; }
     
     .validator-info {
         border-left: 5px solid #004a99;
@@ -71,7 +72,6 @@ if st.sidebar.button("🔄 System Reset"):
 # --- 4. HEADER ---
 st.title("🛡️ Verifiable Truth Layer (VTL)")
 
-# MARKETING MESSAGE
 st.markdown("""
     <div style="margin-bottom: 20px; margin-top: 10px;">
         <h2 style="color: #ffffff; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
@@ -85,18 +85,17 @@ st.markdown("""
 
 st.write("---")
 
-# HOW IT WORKS SEKTION
 st.subheader("How it works")
 hiw_col1, hiw_col2, hiw_col3 = st.columns(3)
 with hiw_col1:
-    st.markdown("### 1. Entropie fixieren")
+    st.markdown("### Entropie fixieren")
     st.write("Das System nutzt unvorhersehbare Echtzeit-Daten (wie Lottozahlen) als Basis. Da diese Werte erst in der Zukunft feststehen, kann niemand das Ergebnis manipulieren.")
 with hiw_col2:
-    st.markdown("### 2. Vault-Versiegelung")
+    st.markdown("### Vault-Versiegelung")
     st.write("Durch den individuellen Protocol-Salt wird die Berechnung 'gesalzen'. Dies verhindert, dass Dritte Ergebnisse vorab berechnen oder Muster erkennen.")
 with hiw_col3:
-    st.markdown("### 3. Mathematischer Beweis")
-    st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder User jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
+    st.markdown("### Mathematischer Beweis")
+    st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder Bürger jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
 
 st.write("---")
 
@@ -104,10 +103,14 @@ st.write("---")
 if choice == "VTL Generator":
     col1, col2 = st.columns([1, 1])
     with col1:
-        st.header("1. 🔐 Security Vault")
+        st.header("🔐 Security Vault")
         c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
-        raw_salt = st.text_input("Protocol-Salt", placeholder="Geben Sie den Salt zur Versiegelung ein...")
+        
+        # Salt-Label mit Asterisk
+        st.markdown('Protocol-Salt <span class="required-star">*</span>', unsafe_allow_html=True)
+        raw_salt = st.text_input("Protocol-Salt-Input", placeholder="Geben Sie den Salt zur Versiegelung ein...", label_visibility="collapsed")
+        
         st.markdown('<p class="info-hint">Der Salt ist ein einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt und Manipulationen durch Vorabberechnung ausschließt.</p>', unsafe_allow_html=True)
         
         if st.button("Salt im VTL Vault registrieren"):
@@ -124,7 +127,7 @@ if choice == "VTL Generator":
             st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br>Zeitstempel: {last_s['Zeit']}<br>SHA-256 Hash: {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
     
     with col2:
-        st.header("2. 🎰 Entropy Source")
+        st.header("🎰 Entropy Source")
         today_str = datetime.now().strftime("%d.%m.%Y")
         def entropy_row(label, val, key):
             c_l, c_d = st.columns([1, 1])
@@ -141,7 +144,7 @@ if choice == "VTL Generator":
         p_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
     st.write("---")
-    st.header("3. 🧮 Zufallszahlen generieren")
+    st.header("🧮 Zufallszahlen generieren")
     r_c1, r_c2, r_c3 = st.columns(3)
     with r_c1: count = st.number_input("Anzahl der Werte", min_value=1, value=5)
     with r_c2: min_v = st.number_input("Untergrenze", value=1)
