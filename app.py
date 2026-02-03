@@ -128,7 +128,7 @@ with col_v:
     
     btn_c, tim_c = st.columns([2, 1])
     with btn_c:
-        if st.button("Salt im Vault registrieren"):
+        if st.button("Protocol-Salt im Vault registrieren"):
             if not raw_salt.strip():
                 st.error("Bitte geben sie zuerst den Protocol-Salt ein!")
             else:
