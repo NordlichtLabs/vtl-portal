@@ -172,6 +172,8 @@ with col_e:
     l_de = st.text_input(f"Quellwerte DE ({today})", "07, 14, 22, 31, 44, 49")
     l_at = st.text_input(f"Quellwerte AT ({today})", "02, 18, 24, 33, 41, 45")
     l_it = st.text_input(f"Quellwerte IT ({today})", "11, 23, 35, 56, 62, 88")
+    # Hier ist der gewünschte Hinweis
+    st.markdown('<p style="color:#aaa; font-style:italic; font-size:13px; margin-top:5px;">Hinweis: Die Quellwerte werden erst im Anschluss an die Ziehung angezeigt.</p>', unsafe_allow_html=True)
     e_hash = hashlib.sha256(f"{l_de}{l_at}{l_it}{today}".encode()).hexdigest()
 
 st.write("---")
@@ -231,7 +233,7 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
+v_hash = st.text_input("Master-Hash aus dem VTL AUDIT CERTIFICATE zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
 
 if st.button("Integrität prüfen"):
     if v_hash:
