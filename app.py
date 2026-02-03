@@ -24,7 +24,7 @@ st.markdown("""
     [data-testid="stSidebar"] { background-color: #2e2e2e; border-right: 1px solid #444; }
     
     /* Blau für Überschriften */
-    h1, h2, h3, .blue-header { color: #004a99 !important; }
+    h1, h2, h3 { color: #004a99 !important; }
     
     /* Buttons */
     .stButton>button { width: 100%; background-color: #004a99; color: white; font-weight: bold; border-radius: 8px; border: none; height: 45px; }
@@ -35,7 +35,8 @@ st.markdown("""
     .signup-btn { background-color: #ffffff; color: #2e2e2e; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; }
 
     /* Problem Statement Styling */
-    .problem-text { color: #aaaaaa; font-style: italic; font-size: 18px; line-height: 1.5; max-width: 900px; margin-bottom: 25px; border-left: 3px solid #004a99; padding-left: 20px; }
+    .problem-description { color: #ffffff; font-style: italic; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 15px; }
+    .marketing-message { color: #ffffff; font-size: 20px; line-height: 1.6; max-width: 1000px; margin-bottom: 25px; }
 
     /* How it works Cards */
     .hiw-card { background-color: #004a99; padding: 25px; border-radius: 12px; height: 100%; min-height: 220px; color: #ffffff; border: none; }
@@ -76,11 +77,16 @@ if choice == "VTL Generator":
     st.markdown("""
         <div style="margin-top: 10px;">
             <h2 style="color: #ffffff !important; margin-bottom: 5px;">„Don't Trust, Verify“</h2>
-            <div class="problem-text">
+            <div class="problem-description">
                 Das Problem herkömmlicher Zufallsgeneratoren: Ein digitales Blindvertrauen. Die meisten heutigen Systeme zur Zufallszahlengenerierung sind eine <b>Blackbox</b>. 
                 Ob bei Gewinnspielen, Audits oder Zuteilungen – das Ergebnis wird hinter verschlossenen Türen berechnet. Für den Nutzer ist nicht nachvollziehbar, 
                 ob das Resultat wirklich dem Zufall entspringt oder im Nachhinein manipuliert wurde. Ohne beweisbare Integrität bleibt jede digitale Entscheidung 
                 eine Vertrauensfrage, kein mathematischer Fakt.
+            </div>
+            <div class="marketing-message">
+                In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
+                VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
+                dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -100,7 +106,7 @@ if choice == "VTL Generator":
     
     st.write("---")
 
-    # Generator Tools (Security Vault, Entropy Source, Generator)
+    # Generator Tools
     col1, col2 = st.columns([1, 1])
     with col1:
         st.header("🔐 Security Vault")
