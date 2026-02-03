@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
-# --- 1. INITIALISIERUNG ---
+# --- 1. INITIALISIERUNG (STATE MANAGEMENT) ---
 if 'registered_salts' not in st.session_state:
     st.session_state.registered_salts = []
 if 'history_data' not in st.session_state:
@@ -12,6 +12,9 @@ if 'history_data' not in st.session_state:
         {"Datum": "03.02.2026", "DE": "12, 45, 67, 23, 89, 10", "AT": "01, 15, 22, 33, 40, 42", "IT": "11, 22, 33, 44, 55, 66", "Hash": "f3b2c1a9e8d7c6b5a49382716059483726150493827160594837261504938271"},
         {"Datum": "02.02.2026", "DE": "05, 14, 28, 33, 41, 44", "AT": "07, 19, 21, 30, 39, 45", "IT": "03, 12, 34, 56, 78, 90", "Hash": "d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5"}
     ]
+# Neu: Speicher für das aktuelle Zertifikat
+if 'current_cert' not in st.session_state:
+    st.session_state.current_cert = None
 
 # --- 2. KONFIGURATION & NEON DESIGN ---
 st.set_page_config(page_title="VTL - Verifiable Truth Layer", layout="wide")
@@ -132,8 +135,6 @@ with col_v:
             2. **Zeitstempel:** Das System quittiert: „Der Salt wurde um 14:00 Uhr versiegelt.“
             3. **Die Ziehung:** Um 20:00 Uhr werden die offiziellen Lottozahlen gezogen (z. B. `7, 14, 23...`).
             4. **Die Kopplung:** VTL berechnet nun: `[7, 14, 23] + [Sicherheit2026] = Ihr Ergebnis`.
-            
-            **Beweis:** Da Ihr Salt bereits feststand, als die Zahlen noch unbekannt waren, ist eine nachträgliche Manipulation mathematisch ausgeschlossen.
         """)
     
     btn_c, tim_c = st.columns([2, 1])
@@ -180,57 +181,55 @@ if st.button("Zahlen & Zertifikat berechnen"):
         m_hash = hashlib.sha256(m_seed.encode()).hexdigest()
         results = [(int(hashlib.sha256(f"{m_hash}-{i}".encode()).hexdigest(), 16) % (max_v - min_v + 1)) + min_v for i in range(1, count + 1)]
         
-        # Visueller Prozess-Flow
+        # In Session State speichern, damit es stabil bleibt
+        st.session_state.current_cert = {
+            "flow": f"<div class='process-flow'><span style='color:#00d4ff'>Entropy-Hash</span> ({e_hash[:8]}...) <b>+</b> <span style='color:#ff00ff'>Protocol-Salt</span> ({curr['Salt']}) <b>=</b> <span style='font-weight:bold'>Master-Hash</span> ({m_hash[:12]}...)</div>",
+            "table": pd.DataFrame({"Wert": results}, index=range(1, count+1)),
+            "m_hash": m_hash,
+            "results": ", ".join(map(str, results)),
+            "p_id": p_id,
+            "today": today,
+            "l_de": l_de, "l_at": l_at, "l_it": l_it,
+            "salt": curr['Salt'],
+            "salt_time": curr['Zeit']
+        }
+        st.session_state.last_m_hash = m_hash
+    else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
+
+# Permanentes Anzeigen des Zertifikats (falls vorhanden)
+if st.session_state.current_cert:
+    c = st.session_state.current_cert
+    st.markdown(c["flow"], unsafe_allow_html=True)
+    rl, rr = st.columns(2)
+    with rl:
+        st.table(c["table"])
+    with rr:
         st.markdown(f"""
-            <div class='process-flow'>
-                <span style='color:#00d4ff'>Entropy-Hash</span> ({e_hash[:8]}...) 
-                <b>+</b> 
-                <span style='color:#ff00ff'>Protocol-Salt</span> ({curr['Salt']}) 
-                <b>=</b> 
-                <span style='font-weight:bold'>Master-Hash</span> ({m_hash[:12]}...)
+            <div class='certificate'>
+                <div style='position:absolute; bottom:20px; right:20px; border:3px double #28a745; color:#28a745; padding:5px 10px; font-weight:bold; transform:rotate(-15deg); border-radius:5px;'>VTL VERIFIED</div>
+                <h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3>
+                <div class='cert-label'>Reference-ID & Date</div>
+                <div class='cert-value'>{c['p_id']} | {c['today']}</div>
+                <hr>
+                <div class='cert-label'>Entropy Sources (DE/AT/IT)</div>
+                <div class='cert-value'>{c['l_de']} | {c['l_at']} | {c['l_it']}</div>
+                <div class='cert-label'>Protocol-Salt (Sealed)</div>
+                <div class='cert-value'>{c['salt']} (Versiegelt: {c['salt_time']})</div>
+                <hr>
+                <div class='cert-label'>Kryptografischer Master-Hash</div>
+                <div class='cert-value' style='font-size:10px;'>{c['m_hash']}</div>
+                <hr>
+                <p style='text-align:center; font-size:22px; font-weight:bold; margin-top:10px;'>{c['results']}</p>
             </div>
         """, unsafe_allow_html=True)
-        
-        rl, rr = st.columns(2)
-        with rl:
-            st.table(pd.DataFrame({"Wert": results}, index=range(1, count+1)))
-        with rr:
-            st.markdown(f"""
-                <div class='certificate'>
-                    <div style='position:absolute; bottom:20px; right:20px; border:3px double #28a745; color:#28a745; padding:5px 10px; font-weight:bold; transform:rotate(-15deg); border-radius:5px;'>VTL VERIFIED</div>
-                    <h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3>
-                    <div class='cert-label'>Reference-ID & Date</div>
-                    <div class='cert-value'>{p_id} | {today}</div>
-                    <hr>
-                    <div class='cert-label'>Entropy Sources (DE/AT/IT)</div>
-                    <div class='cert-value'>{l_de} | {l_at} | {l_it}</div>
-                    <div class='cert-label'>Protocol-Salt (Sealed)</div>
-                    <div class='cert-value'>{curr['Salt']} (Versiegelt: {curr['Zeit']})</div>
-                    <hr>
-                    <div class='cert-label'>Kryptografischer Master-Hash</div>
-                    <div class='cert-value' style='font-size:10px;'>{m_hash}</div>
-                    <hr>
-                    <p style='text-align:center; font-size:22px; font-weight:bold; margin-top:10px;'>{", ".join(map(str, results))}</p>
-                </div>
-            """, unsafe_allow_html=True)
-            st.session_state.last_m_hash = m_hash
-    else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
 
 st.write("---")
 
 # --- 8. VALIDATOR ---
 st.header("🔍 Public Validator")
-st.markdown("""
-    <div style="margin-bottom: 30px;">
-        <div style="font-size: 24px; font-weight: bold; color: #00d4ff; margin-bottom: 10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>
-        <div style="font-size: 18px; color: #ffffff; line-height: 1.5; max-width: 1000px;">
-            Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
-            Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
-            offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, 
-            wird die Integrität bestätigt – so wird aus blindem Vertrauen beweisbare Sicherheit.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+st.markdown("""<div style="font-size:24px; font-weight:bold; color:#00d4ff; margin-bottom:10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>
+    <div style="font-size:18px; color:#ffffff; line-height:1.5; max-width:1000px; margin-bottom:20px;">
+    Gleichen Sie Ihren Master-Hash live mit den versiegelten Protokollen ab.</div>""", unsafe_allow_html=True)
 
 v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
 
@@ -238,15 +237,9 @@ if st.button("Integrität prüfen"):
     if v_hash:
         with st.spinner('Validierung...'):
             time.sleep(1.2)
-            is_valid = False
-            if 'last_m_hash' in st.session_state and v_hash == st.session_state.last_m_hash:
-                is_valid = True
-            elif any(h['Hash'] == v_hash for h in st.session_state.history_data):
-                is_valid = True
-            
+            is_valid = (v_hash == st.session_state.get('last_m_hash')) or any(h['Hash'] == v_hash for h in st.session_state.history_data)
             if is_valid:
                 st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-                st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
                 st.markdown(f"**Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**<br>• Entropy Source Sync verifiziert.<br>• Date-Binding bestätigt.<br>• Security Vault abgeglichen.<br>• Proof of Fairness: OK.", unsafe_allow_html=True)
             else:
                 st.error("❌ INTEGRITÄT VERLETZT / UNBEKANNTER HASH")
@@ -264,15 +257,5 @@ for idx, h in enumerate(st.session_state.history_data):
                 st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
                 st.rerun()
         if st.session_state.get(f"open_{idx}", False):
-            st.markdown(f"""
-                <div class='detail-box'>
-                    <div style='line-height: 1.8; margin-bottom:15px;'>
-                        <span style='color:#00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br>
-                        <span style='color:#00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br>
-                        <span style='color:#00d4ff;'>●</span> <b>IT:</b> {h['IT']}
-                    </div>
-                    <hr style='border: 0.5px solid #00d4ff; opacity: 0.3;'>
-                    <p style='font-family:monospace; font-size:12px; color:#aaa; margin:0;'><b>VERIFICATION HASH:</b><br>{h['Hash']}</p>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"<div class='detail-box'><div style='line-height:1.8; margin-bottom:15px;'><span style='color:#00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br><span style='color:#00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br><span style='color:#00d4ff;'>●</span> <b>IT:</b> {h['IT']}</div><hr style='opacity:0.3;'><p style='font-family:monospace; font-size:12px; color:#aaa;'><b>VERIFICATION HASH:</b><br>{h['Hash']}</p></div>", unsafe_allow_html=True)
         st.markdown("<hr style='border:0.5px solid #222; margin:10px 0;'>", unsafe_allow_html=True)
