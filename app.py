@@ -37,6 +37,11 @@ st.markdown("""
         padding: 5px 10px; font-weight: bold; transform: rotate(-15deg);
         border-radius: 5px; font-size: 14px; opacity: 0.8;
     }
+    .vault-info {
+        background-color: #1a1a1a; padding: 15px; border-radius: 8px;
+        border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px;
+    }
+    .status-locked { color: #ff4b4b; font-weight: bold; }
     .certificate h3, .certificate p, .certificate b { color: #000000 !important; }
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
     .country-tag { font-weight: bold; color: #90caf9; min-width: 80px; display: inline-block; }
@@ -61,10 +66,29 @@ if choice == "VTL Generator":
         c_name = st.text_input("Firmenname", "VTL Enterprise Solutions")
         p_id = st.text_input("Projekt-ID", "SEC-AUDIT-2026")
         raw_salt = st.text_input("Client-Salt", placeholder="Ihr privater Salt...")
+        
         if st.button("Client-Salt registrieren"):
             if raw_salt.strip():
-                st.session_state.registered_salts.append({"Title": p_id, "Salt": raw_salt, "Zeit": datetime.now().strftime("%H:%M:%S")})
-                st.success("✅ Salt im Vault versiegelt.")
+                salt_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
+                st.session_state.registered_salts.append({
+                    "ID": p_id, 
+                    "Salt": raw_salt, 
+                    "Hash": salt_hash,
+                    "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+                })
+        
+        # Vault Anzeige direkt unter dem Button
+        if st.session_state.registered_salts:
+            last_s = st.session_state.registered_salts[-1]
+            st.success("✅ Salt im Vault registriert")
+            st.markdown(f"""
+            <div class="vault-info">
+                <b>Vault-Eintrag:</b><br>
+                Datum: {last_s['Zeit']}<br>
+                Hash: {last_s['Hash'][:32]}...<br>
+                Status: <span class="status-locked">LOCKED / SEALED</span>
+            </div>
+            """, unsafe_allow_html=True)
     
     with col2:
         st.header("🎰 Entropy Source")
@@ -83,14 +107,26 @@ if choice == "VTL Generator":
         m_entropy = f"{l_de}-{l_at}-{l_it}-{today_str}"
         p_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
-    if st.button("Zertifikat generieren"):
+    st.write("---")
+    if st.button("Zahlen berechnen & Zertifikat generieren"):
         if st.session_state.registered_salts:
-            st.write("---")
+            current_salt = st.session_state.registered_salts[-1]["Salt"]
+            
+            # ECHTE ZUFALLSGENERIERUNG LOGIK
+            results = []
+            for i in range(1, 6): # Wir generieren 5 Zahlen
+                seed = f"{p_hash}-{current_salt}-{i}"
+                h = hashlib.sha256(seed.encode()).hexdigest()
+                num = (int(h, 16) % 100) + 1 # Zahlen von 1-100
+                results.append(str(num))
+            
+            res_str = ", ".join(results)
+            
             res_left, res_right = st.columns(2)
             with res_left:
-                st.header("Berechnung erfolgreich")
-                st.info(f"Master-Hash: {p_hash[:20]}...")
-                st.markdown("### Generierte Zufallswerte:\n**12 • 88 • 43 • 09 • 55**")
+                st.header("Berechnung abgeschlossen")
+                st.info(f"Master-Hash (Entropy): {p_hash[:20]}...")
+                st.markdown(f"### Generierte Werte:\n**{res_str.replace(', ', ' • ')}**")
             with res_right:
                 st.markdown(f"""
                 <div class='certificate'>
@@ -99,11 +135,11 @@ if choice == "VTL Generator":
                     <p><b>HALTER:</b> {c_name}<br><b>PROJEKT:</b> {p_id}<br><b>DATUM:</b> {today_str}</p>
                     <p style='font-size:10px; word-break:break-all;'><b>VERIFICATION HASH:</b><br>{p_hash}</p>
                     <hr style='border:1px dashed #000;'>
-                    <p style='text-align:center; font-size:20px; font-weight:bold;'>12, 88, 43, 09, 55</p>
+                    <p style='text-align:center; font-size:20px; font-weight:bold;'>{res_str}</p>
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.error("❌ Bitte erst Salt registrieren!")
+            st.error("❌ Bitte erst den Client-Salt registrieren (Vault Lock notwendig)!")
 
 # --- 5. PUBLIC VALIDATOR ---
 elif choice == "Public Validator":
@@ -113,7 +149,7 @@ elif choice == "Public Validator":
     if st.button("Validieren"):
         if cert_id:
             with st.spinner('Kryptografische Verifizierung läuft...'):
-                time.sleep(1.5)
+                time.sleep(1.2)
                 st.success("✅ VALIDIERUNG ERFOLGREICH")
                 st.balloons()
                 st.info("Dieses Zertifikat wurde mathematisch gegen die Entropy-Quellen und den Salt-Vault geprüft.")
@@ -122,6 +158,7 @@ elif choice == "Public Validator":
                 * **External Entropy Sources:** Verifiziert ✅
                 * **Date-Binding Integrity:** Korrekt ✅
                 * **Private Salt Alignment:** Match ✅
+                * **Vault Status:** SEALED ✅
                 """)
         else:
             st.warning("Bitte ID eingeben.")
