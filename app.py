@@ -47,15 +47,8 @@ st.markdown("""
     .hiw-card { background-color: rgba(0, 74, 153, 0.15); padding: 25px; border-radius: 12px; height: 100%; border: 1px solid #004a99; }
     
     .certificate { 
-        border: 2px solid #000; 
-        padding: 25px; 
-        border-radius: 10px; 
-        background-color: #ffffff; 
-        color: #000000; 
-        font-family: 'Courier New', monospace; 
-        position: relative; 
-        box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
-        line-height: 1.2;
+        border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; 
+        font-family: 'Courier New', monospace; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.3); line-height: 1.2;
     }
     .cert-label { font-weight: bold; font-size: 10px; color: #666; text-transform: uppercase; }
     .cert-value { font-size: 12px; margin-bottom: 8px; word-break: break-all; }
@@ -63,6 +56,8 @@ st.markdown("""
     .timer-container { border: 1px solid #ff00ff; background-color: rgba(255, 0, 255, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff00ff; }
     .vault-info { background-color: #000; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .detail-box { background-color: rgba(0, 212, 255, 0.05); padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #00d4ff; }
+    
+    .process-flow { background-color: rgba(0, 212, 255, 0.1); border: 1px dashed #00d4ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -158,13 +153,7 @@ with col_v:
 
     if st.session_state.registered_salts:
         ls = st.session_state.registered_salts[-1]
-        st.markdown(f"""
-            <div class="vault-info">
-                <b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br>
-                <b>Versiegelt um:</b> {ls['Zeit']} Uhr<br>
-                <b>Vault-Hash:</b> {ls["Hash"][:32]}...
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f'<div class="vault-info"><b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br><b>Versiegelt um:</b> {ls["Zeit"]} Uhr<br><b>Vault-Hash:</b> {ls["Hash"][:32]}...</div>', unsafe_allow_html=True)
 
 with col_e:
     st.header("🎰 Entropy Source")
@@ -172,7 +161,6 @@ with col_e:
     l_de = st.text_input(f"Quellwerte DE ({today})", "07, 14, 22, 31, 44, 49")
     l_at = st.text_input(f"Quellwerte AT ({today})", "02, 18, 24, 33, 41, 45")
     l_it = st.text_input(f"Quellwerte IT ({today})", "11, 23, 35, 56, 62, 88")
-    # Hier ist der gewünschte Hinweis
     st.markdown('<p style="color:#aaa; font-style:italic; font-size:13px; margin-top:5px;">Hinweis: Die Quellwerte werden erst im Anschluss an die Ziehung angezeigt.</p>', unsafe_allow_html=True)
     e_hash = hashlib.sha256(f"{l_de}{l_at}{l_it}{today}".encode()).hexdigest()
 
@@ -191,6 +179,17 @@ if st.button("Zahlen & Zertifikat berechnen"):
         m_seed = f"{e_hash}-{curr['Salt']}"
         m_hash = hashlib.sha256(m_seed.encode()).hexdigest()
         results = [(int(hashlib.sha256(f"{m_hash}-{i}".encode()).hexdigest(), 16) % (max_v - min_v + 1)) + min_v for i in range(1, count + 1)]
+        
+        # Visueller Prozess-Flow
+        st.markdown(f"""
+            <div class='process-flow'>
+                <span style='color:#00d4ff'>Entropy-Hash</span> ({e_hash[:8]}...) 
+                <b>+</b> 
+                <span style='color:#ff00ff'>Protocol-Salt</span> ({curr['Salt']}) 
+                <b>=</b> 
+                <span style='font-weight:bold'>Master-Hash</span> ({m_hash[:12]}...)
+            </div>
+        """, unsafe_allow_html=True)
         
         rl, rr = st.columns(2)
         with rl:
@@ -233,7 +232,7 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-v_hash = st.text_input("Master-Hash aus dem VTL AUDIT CERTIFICATE zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
+v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
 
 if st.button("Integrität prüfen"):
     if v_hash:
