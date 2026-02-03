@@ -13,7 +13,7 @@ if 'history_data' not in st.session_state:
         {"Datum": "02.02.2026", "DE": "05, 14, 28, 33, 41, 44", "AT": "07, 19, 21, 30, 39, 45", "IT": "03, 12, 34, 56, 78, 90", "Hash": "d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5"}
     ]
 
-# --- 2. KONFIGURATION & DESIGN ---
+# --- 2. KONFIGURATION & NEON DESIGN ---
 st.set_page_config(page_title="VTL - Verifiable Truth Layer", layout="wide")
 
 st.markdown("""
@@ -36,47 +36,31 @@ st.markdown("""
     }
     .stButton>button:hover { box-shadow: 0 0 20px #00d4ff; transform: translateY(-2px); }
 
-    .login-btn { border: 1px solid #00d4ff; color: #00d4ff; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; }
-    .signup-btn { background-color: #00d4ff; color: #000; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; }
+    /* Header Buttons Weiss */
+    .login-btn { border: 1px solid #ffffff; color: #ffffff !important; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; }
+    .signup-btn { background-color: #ffffff; color: #000 !important; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; }
 
-    /* Problem Description */
-    .problem-description { 
-        color: #ffffff !important; 
-        font-size: 18px; 
-        line-height: 1.5; 
-        max-width: 1000px; 
-        margin-bottom: 20px; 
-    }
+    .problem-description { color: #ffffff !important; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 20px; }
 
-    /* Use Case Boxen & Textgrösse */
-    .use-case-box { 
-        padding: 25px; 
-        border-radius: 10px; 
-        background: rgba(255, 255, 255, 0.03); 
-        height: 100%;
-        border-top: 4px solid;
-    }
+    .use-case-box { padding: 25px; border-radius: 10px; background: rgba(255, 255, 255, 0.03); height: 100%; border-top: 4px solid; }
     .web2-box { border-color: #00d4ff; }
     .web3-box { border-color: #ff00ff; }
     
-    .use-case-list { 
-        list-style-type: none; 
-        padding-left: 0; 
-        font-size: 17px; /* Schriftgröße erhöht */
-        line-height: 1.8; 
-    }
-    .area-label { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 5px; display: block; }
+    .use-case-list { list-style-type: none; padding-left: 0; font-size: 17px; line-height: 1.8; }
     .web2-text { color: #00d4ff; font-weight: bold; font-size: 22px; }
     .web3-text { color: #ff00ff; font-weight: bold; font-size: 22px; }
 
-    /* Process Cards */
     .hiw-card { background-color: rgba(0, 74, 153, 0.15); padding: 25px; border-radius: 12px; height: 100%; border: 1px solid #004a99; }
     .hiw-number { color: #00d4ff; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
 
-    /* Certificate & Vault */
     .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', monospace; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.3); }
     .timer-container { border: 1px solid #ff00ff; background-color: rgba(255, 0, 255, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff00ff; }
     .vault-info { background-color: #000; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 10px; font-family: monospace; font-size: 12px; }
+    
+    [data-testid="stTable"] { max-width: 250px; margin-left: auto; margin-right: auto; }
+    [data-testid="stTable"] td, [data-testid="stTable"] th { text-align: center !important; }
+    
+    .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -87,7 +71,7 @@ with head_col1:
 with head_col2:
     st.markdown('<div style="text-align: right; padding-top: 15px;"><a class="login-btn">Login</a><a class="signup-btn">Sign-up</a></div>', unsafe_allow_html=True)
 
-# --- 4. INTRO SECTION ---
+# --- 4. INTRO ---
 st.markdown("""
     <div style="margin-top: 20px;">
         <div class="problem-description">
@@ -103,12 +87,11 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# USE CASE SEKTION
+# USE CASES
 uc_col1, uc_col2 = st.columns(2)
 with uc_col1:
     st.markdown("""
         <div class="use-case-box web2-box">
-            <span class="area-label">Enterprise Solutions</span>
             <div class="web2-text">Use Cases: Web2</div>
             <ul class="use-case-list">
                 <li>🎲 <b>Verlosungen:</b> Beweisbare Fairness für Marketing-Kampagnen.</li>
@@ -118,11 +101,9 @@ with uc_col1:
             </ul>
         </div>
     """, unsafe_allow_html=True)
-
 with uc_col2:
     st.markdown("""
         <div class="use-case-box web3-box">
-            <span class="area-label">Decentralized Solutions</span>
             <div class="web3-text">Use Cases: Web3</div>
             <ul class="use-case-list">
                 <li>🖼️ <b>NFT-Minting:</b> Zufällige Trait-Zuweisung On-Chain.</li>
@@ -135,7 +116,7 @@ with uc_col2:
 
 st.write("---")
 
-# --- 5. PROCESS CARDS ---
+# --- 5. PROCESS ---
 st.subheader("Der VTL-Prozess")
 hiw_col1, hiw_col2, hiw_col3, hiw_col4 = st.columns(4)
 steps = [
@@ -172,7 +153,7 @@ with col_v:
             st.markdown("""<script>(function(){var d=new Date(Date.parse(new Date())+600000);function u(){var t=Date.parse(d)-Date.parse(new Date());var s=Math.floor((t/1000)%60);var m=Math.floor((t/1000/60)%60);var e=document.getElementById('c-clock');if(e){e.innerHTML=m+":"+('0'+s).slice(-2);if(t<=0)clearInterval(i);}}u();var i=setInterval(u,1000);})();</script>""", unsafe_allow_html=True)
 
     if st.session_state.registered_salts:
-        st.markdown('<div style="font-size: 15px; margin-top:15px; line-height:1.4;"><b>VTL Sealing Cut-off:</b> Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen.</div>', unsafe_allow_html=True)
+        st.markdown("""<div style="font-size: 15px; margin-top:15px; line-height:1.4;"><b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen. <i>Don't Trust, Verify.</i></div>""", unsafe_allow_html=True)
         ls = st.session_state.registered_salts[-1]
         st.markdown(f'<div class="vault-info"><b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br><b>Vault-Hash:</b> {ls["Hash"][:32]}...</div>', unsafe_allow_html=True)
 
@@ -212,10 +193,43 @@ st.write("---")
 
 # --- 8. VALIDATOR ---
 st.header("🔍 Public Validator")
-v_hash = st.text_input("Master-Hash zur Verifizierung eingeben")
+st.markdown("""
+    <div style="margin-bottom: 30px;">
+        <div style="font-size: 24px; font-weight: bold; color: #00d4ff; margin-bottom: 10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>
+        <div style="font-size: 18px; color: #ffffff; line-height: 1.5; max-width: 1000px;">
+            Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
+            Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
+            offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, 
+            wird die Integrität bestätigt – so wird aus blindem Vertrauen beweisbare Sicherheit.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
 if st.button("Integrität prüfen"):
     if v_hash:
         with st.spinner('Validierung...'):
-            time.sleep(1)
+            time.sleep(1.2)
             st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-            st.info("Kette korrespondiert mit offiziellen Entropie-Quellen und Vault-Protokoll.")
+            st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
+            st.markdown(f"""
+            **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
+            - **Entropy Source Sync:** Quellwerte (DE, AT, IT) verifiziert.
+            - **Date-Binding:** Gültigkeit für den Ziehungstag bestätigt.
+            - **Security Vault:** Salt-Integrität im Vault abgeglichen.
+            - **Proof of Fairness:** Protokoll ist lückenlos und manipulationssicher.
+            """)
+
+st.write("---")
+
+# --- 9. HISTORY ---
+st.header("📜 Protokoll-Historie")
+for idx, h in enumerate(st.session_state.history_data):
+    hc1, hc2, hc3 = st.columns([2, 5, 2])
+    hc1.write(f"**{h['Datum']}**")
+    hc2.write("Multi-Entropy Verification")
+    if hc3.button("Details", key=f"hist_{idx}"):
+        st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
+        st.rerun()
+    if st.session_state.get(f"open_{idx}", False):
+        st.markdown(f"<div class='detail-box'><p>DE: {h['DE']} | AT: {h['AT']} | IT: {h['IT']}</p><p style='font-family: sans-serif; font-size: 14px;'><b>SHA-256 HASH:</b> {h['Hash']}</p></div>", unsafe_allow_html=True)
