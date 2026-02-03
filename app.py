@@ -23,9 +23,21 @@ st.markdown("""
     <style>
     .stApp { background-color: #2e2e2e; color: #ffffff; }
     [data-testid="stSidebar"] { background-color: #2e2e2e; border-right: 1px solid #444; }
+    
+    /* Buttons */
     .stButton>button { width: 100%; background-color: #004a99; color: white; font-weight: bold; border-radius: 8px; border: none; height: 45px; }
     .stDownloadButton>button { background-color: #28a745 !important; color: white !important; }
     
+    /* Login Area Styling */
+    .login-btn { 
+        background-color: transparent; border: 1px solid #ffffff; color: white; 
+        padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px;
+    }
+    .signup-btn { 
+        background-color: #ffffff; color: #2e2e2e; 
+        padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold;
+    }
+
     .certificate { 
         border: 2px solid #000; padding: 25px; border-radius: 10px; 
         background-color: #ffffff; color: #000000;
@@ -58,8 +70,21 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. NAVIGATION & RESET ---
-st.sidebar.title("🛡️ VTL Navigation")
+# --- 3. HEADER MIT LOGIN/SIGN-UP ---
+head_col1, head_col2 = st.columns([4, 1])
+
+with head_col1:
+    st.title("🛡️ Verifiable Truth Layer (VTL)")
+
+with head_col2:
+    st.markdown("""
+        <div style="text-align: right; padding-top: 15px;">
+            <a class="login-btn" href="#">Login</a>
+            <a class="signup-btn" href="#">Sign-up</a>
+        </div>
+        """, unsafe_allow_html=True)
+
+# --- 4. NAVIGATION & CONTENT-STEUERUNG ---
 choice = st.sidebar.radio("Bereich wählen:", ["VTL Generator", "Public Validator"])
 
 if st.sidebar.button("🔄 System Reset"):
@@ -67,9 +92,7 @@ if st.sidebar.button("🔄 System Reset"):
     st.session_state.selected_hist_idx = None
     st.rerun()
 
-# --- 4. HEADER ---
-st.title("🛡️ Verifiable Truth Layer (VTL)")
-
+# --- 5. CONTENT GENERATOR ---
 if choice == "VTL Generator":
     st.markdown("""
         <div style="margin-bottom: 20px; margin-top: 10px;">
@@ -81,7 +104,9 @@ if choice == "VTL Generator":
             </p>
         </div>
         """, unsafe_allow_html=True)
+
     st.write("---")
+
     st.subheader("How it works")
     hiw_col1, hiw_col2, hiw_col3 = st.columns(3)
     with hiw_col1:
@@ -93,15 +118,16 @@ if choice == "VTL Generator":
     with hiw_col3:
         st.markdown("### 3. Mathematischer Beweis")
         st.write("Der Master-Hash verknüpft alles zu einer unveränderbaren Beweiskette.")
+
     st.write("---")
 
-# --- 5. VTL GENERATOR ---
-if choice == "VTL Generator":
+    # --- GENERATOR TOOLS ---
     col1, col2 = st.columns([1, 1])
     with col1:
         st.header("🔐 Security Vault")
         c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
+        
         st.markdown('Protocol-Salt <span class="required-star">*</span>', unsafe_allow_html=True)
         raw_salt = st.text_input("Protocol-Salt-Input", placeholder="Salt eingeben...", label_visibility="collapsed")
         st.markdown('<p class="info-hint">Der Salt ist ein einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt.</p>', unsafe_allow_html=True)
@@ -110,10 +136,7 @@ if choice == "VTL Generator":
             if raw_salt.strip():
                 salt_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
                 st.session_state.registered_salts.append({
-                    "ID": p_id, 
-                    "Salt": raw_salt, 
-                    "Hash": salt_hash, 
-                    "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+                    "ID": p_id, "Salt": raw_salt, "Hash": salt_hash, "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")
                 })
         
         if st.session_state.registered_salts:
@@ -195,10 +218,10 @@ elif choice == "Public Validator":
     cert_id = st.text_input("Master-Hash zur Verifizierung eingeben", key="val_input_field")
     if st.button("Integrität prüfen"):
         if cert_id:
-            with st.spinner('Kette wird rekonstruiert...'):
+            with st.spinner('Verifizierung läuft...'):
                 time.sleep(1.2)
                 st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-                st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
+                st.info("Dieses Zertifikat entspricht exakt den hinterlegten Entropie-Quellen.")
                 st.markdown(f"""
                 **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
                 - **Entropy Source Sync:** Quellwerte (DE, AT, IT) verifiziert.
