@@ -79,9 +79,12 @@ if choice == "VTL Generator":
         c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
         raw_salt = st.text_input("Protocol-Salt", placeholder="Geben Sie den Salt zur Versiegelung ein...")
-        st.markdown('<p class="info-hint">Einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt und Manipulationen durch Vorabberechnung ausschließt.</p>', unsafe_allow_html=True)
         
-        if st.button("Salt im Vault registrieren"):
+        # AKTUALISIERTER SALT HINWEIS
+        st.markdown('<p class="info-hint">Der Salt ist ein einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt und Manipulationen durch Vorabberechnung ausschließt.</p>', unsafe_allow_html=True)
+        
+        # UMGERANNTER BUTTON
+        if st.button("Salt im VTL Vault registrieren"):
             if raw_salt.strip():
                 salt_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
                 st.session_state.registered_salts.append({
@@ -153,7 +156,6 @@ if choice == "VTL Generator":
 elif choice == "Public Validator":
     st.title("🔍 Public Validator")
     
-    # ERKLÄRUNGS-BOX
     st.markdown("""
     <div class="validator-info">
         <b>Wahrheit durch Mathematik:</b> Der Public Validator ist die unabhängige Prüfinstanz für Endnutzer. 
@@ -169,7 +171,7 @@ elif choice == "Public Validator":
             with st.spinner('Rekonstruktion der kryptografischen Kette...'):
                 time.sleep(1.2)
                 st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-                st.balloons()
+                # LUFTBALLONS WURDEN ENTFERNT
                 st.info("Dieses Zertifikat entspricht exakt den hinterlegten Entropie-Quellen.")
                 st.markdown(f"""
                 **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
