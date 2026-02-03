@@ -23,29 +23,28 @@ st.markdown("""
     .stApp { background-color: #2e2e2e; color: #ffffff; }
     [data-testid="stSidebar"] { background-color: #2e2e2e; border-right: 1px solid #444; }
     
-    /* Blau für Überschriften */
     h1, h2, h3 { color: #004a99 !important; }
     
-    /* Buttons */
     .stButton>button { width: 100%; background-color: #004a99; color: white; font-weight: bold; border-radius: 8px; border: none; height: 45px; }
     .stDownloadButton>button { background-color: #28a745 !important; color: white !important; }
     
-    /* Header & Login Area */
     .login-btn { background-color: transparent; border: 1px solid #ffffff; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; cursor: pointer; }
     .signup-btn { background-color: #ffffff; color: #2e2e2e; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; }
 
-    /* Text-Bereiche */
     .problem-description { color: #ffffff; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 20px; }
     .marketing-message { color: #ffffff; font-size: 20px; line-height: 1.6; max-width: 1000px; margin-bottom: 25px; }
 
-    /* How it works Cards */
     .hiw-card { background-color: #004a99; padding: 25px; border-radius: 12px; height: 100%; min-height: 220px; color: #ffffff; border: none; }
     .hiw-number { color: #ffffff; font-size: 28px; font-weight: bold; margin-bottom: 15px; opacity: 0.8; }
     .hiw-card b { font-size: 18px; color: #ffffff !important; }
 
-    /* Zertifikat & Vault */
     .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', Courier, monospace; position: relative; box-shadow: 10px 10px 20px rgba(0,0,0,0.5); }
     .verified-seal { position: absolute; bottom: 20px; right: 20px; border: 3px double #28a745; color: #28a745; padding: 5px 10px; font-weight: bold; transform: rotate(-15deg); border-radius: 5px; font-size: 14px; opacity: 0.8; }
+    
+    /* Zentrierung für die Ergebnistabelle */
+    th { text-align: center !important; }
+    [data-testid="stTable"] { max-width: 250px; margin-left: auto; margin-right: auto; }
+    
     .vault-info { background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .status-locked { color: #ff4b4b; font-weight: bold; }
     .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
@@ -73,7 +72,6 @@ if st.sidebar.button("🔄 System Reset"):
 
 # --- 5. CONTENT STEUERUNG ---
 if choice == "VTL Generator":
-    # Problembeschreibung -> Slogan -> Marketing Message
     st.markdown("""
         <div style="margin-top: 20px;">
             <div class="problem-description">
@@ -91,7 +89,6 @@ if choice == "VTL Generator":
         """, unsafe_allow_html=True)
     st.write("---")
 
-    # How it works Cards
     st.subheader("Der VTL-Prozess: In 4 Schritten zur beweisbaren Wahrheit")
     hiw_col1, hiw_col2, hiw_col3, hiw_col4 = st.columns(4)
     with hiw_col1:
@@ -105,7 +102,6 @@ if choice == "VTL Generator":
     
     st.write("---")
 
-    # Generator Tools
     col1, col2 = st.columns([1, 1])
     with col1:
         st.header("🔐 Security Vault")
@@ -157,10 +153,22 @@ if choice == "VTL Generator":
             res_l, res_r = st.columns(2)
             with res_l:
                 st.subheader("Generierte Output-Werte")
-                st.table(pd.DataFrame({"Index": range(1, count+1), "Wert": results}).set_index("Index"))
+                df_display = pd.DataFrame({"Index": range(1, count+1), "Wert": results}).set_index("Index")
+                st.table(df_display.style.set_properties(**{'text-align': 'center'}))
             with res_r:
                 res_str = ", ".join(map(str, results))
-                st.markdown(f"""<div class='certificate'><div class='verified-seal'>VTL VERIFIED</div><h3 style='margin-top:0; font-size:16px;'>VTL AUDIT CERTIFICATE</h3><p style='font-size:12px;'><b>ENTITY:</b> {c_name}<br><b>REF-ID:</b> {p_id}<br><b>DATE:</b> {today_str}</p><hr style='border:1px solid #eee;'><p style='font-size:10px; word-break:break-all;'><b>MASTER HASH (PROTOCOL PROOF):</b><br><b>{m_hash}</b></p><p style='font-size:10px; word-break:break-all; color:#666;'><b>VAULT REFERENCE (SALT HASH):</b><br>{curr_sh}</p><hr style='border:1px dashed #000;'><p style='text-align:center; font-size:22px; font-weight:bold; letter-spacing:2px;'>{res_str}</p></div>""", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div class='certificate'>
+                    <div class='verified-seal'>VTL VERIFIED</div>
+                    <h3 style='margin-top:0; font-size:16px;'>VTL AUDIT CERTIFICATE</h3>
+                    <p style='font-size:12px;'><b>ENTITY:</b> {c_name}<br><b>REF-ID:</b> {p_id}<br><b>DATE:</b> {today_str}</p>
+                    <hr style='border:1px solid #eee;'>
+                    <p style='font-size:10px; word-break:break-all;'><b>MASTER HASH (PROTOCOL PROOF):</b><br><b>{m_hash}</b></p>
+                    <p style='font-size:10px; word-break:break-all;'><b>VAULT REFERENCE (SALT HASH):</b><br><b>{curr_sh}</b></p>
+                    <hr style='border:1px dashed #000;'>
+                    <p style='text-align:center; font-size:22px; font-weight:bold; letter-spacing:2px;'>{res_str}</p>
+                </div>
+                """, unsafe_allow_html=True)
                 st.download_button("📥 Zertifikat herunterladen", f"Master Hash: {m_hash}\nSalt Hash: {curr_sh}\nValues: {res_str}", f"VTL_Cert_{p_id}.txt")
         else: st.error("❌ Bitte versiegeln Sie zuerst einen Protocol-Salt im Vault!")
 
