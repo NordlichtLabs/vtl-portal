@@ -41,9 +41,9 @@ st.markdown("""
     .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', Courier, monospace; position: relative; box-shadow: 10px 10px 20px rgba(0,0,0,0.5); }
     .verified-seal { position: absolute; bottom: 20px; right: 20px; border: 3px double #28a745; color: #28a745; padding: 5px 10px; font-weight: bold; transform: rotate(-15deg); border-radius: 5px; font-size: 14px; opacity: 0.8; }
     
-    /* Zentrierung für die Ergebnistabelle */
-    th { text-align: center !important; }
+    /* Vollständige Zentrierung für Tabelle und Inhalte */
     [data-testid="stTable"] { max-width: 250px; margin-left: auto; margin-right: auto; }
+    [data-testid="stTable"] td, [data-testid="stTable"] th { text-align: center !important; }
     
     .vault-info { background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .status-locked { color: #ff4b4b; font-weight: bold; }
@@ -153,6 +153,7 @@ if choice == "VTL Generator":
             res_l, res_r = st.columns(2)
             with res_l:
                 st.subheader("Generierte Output-Werte")
+                # Zentrierung der Dateninhalte via Pandas Styler
                 df_display = pd.DataFrame({"Index": range(1, count+1), "Wert": results}).set_index("Index")
                 st.table(df_display.style.set_properties(**{'text-align': 'center'}))
             with res_r:
