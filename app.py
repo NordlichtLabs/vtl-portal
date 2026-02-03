@@ -65,7 +65,7 @@ with head_col2:
     st.markdown('<div style="text-align: right; padding-top: 15px;"><a class="login-btn">Login</a><a class="signup-btn">Sign-up</a></div>', unsafe_allow_html=True)
 
 # --- 4. SIDEBAR ---
-choice = st.sidebar.radio("Bereich wählen:", ["VTL Generator", "Public Validator"])
+choice = st.sidebar.radio("Navigation", ["VTL Generator", "Public Validator"])
 if st.sidebar.button("🔄 System Reset"):
     st.session_state.registered_salts = []
     st.session_state.selected_hist_idx = None
