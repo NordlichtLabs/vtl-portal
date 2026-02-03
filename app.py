@@ -182,7 +182,7 @@ if st.button("Zahlen & Zertifikat berechnen"):
             "p_id": p_id, "date": today, "entropy_all": f"{l_de} | {l_at} | {l_it}", "salt": curr['Salt'], "salt_time": curr['Zeit']
         }
         st.session_state.last_m_hash = m_hash
-    else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
+    else: st.error("Bitte geben Sie zuerst den Protocol-Salt ein!")
 
 if st.session_state.current_cert:
     c = st.session_state.current_cert
