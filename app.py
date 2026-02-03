@@ -30,8 +30,7 @@ st.markdown("""
     h1 { color: #00d4ff !important; text-shadow: 0 0 10px #00d4ff; }
     
     .stButton>button { 
-        width: 100%; 
-        background: linear-gradient(45deg, #004a99, #00d4ff); 
+        width: 100%; background: linear-gradient(45deg, #004a99, #00d4ff); 
         color: white; font-weight: bold; border-radius: 5px; border: none; height: 45px; transition: 0.3s;
     }
     .stButton>button:hover { box-shadow: 0 0 20px #00d4ff; transform: translateY(-2px); }
@@ -192,7 +191,7 @@ if st.button("Zahlen & Zertifikat berechnen"):
             "results": ", ".join(map(str, results)),
             "p_id": p_id,
             "today": today,
-            "l_de": l_de, "l_at": l_at, "l_it": l_it,
+            "l_all": f"{l_de} | {l_at} | {l_it}",
             "salt": curr['Salt'],
             "salt_time": curr['Zeit']
         }
@@ -216,17 +215,17 @@ if st.session_state.current_cert:
                 <div class='cert-value'>{c['p_id']} | {c['today']}</div>
                 
                 <div class='cert-label'>Entropy Sources (DE/AT/IT)</div>
-                <div class='cert-value'>{c['l_de']} | {c['l_at']} | {c['l_it']}</div>
+                <div class='cert-value'>{c['l_all']}</div>
                 
                 <div class='cert-label'>Protocol-Salt (Sealed)</div>
                 <div class='cert-value'>{c['salt']} (Versiegelt um {c['salt_time']})</div>
                 
                 <div class='cert-label'>Kryptografischer Master-Hash</div>
-                <div class='cert-value' style='font-size:13px; font-family: monospace;'>{c['m_hash']}</div>
+                <div class='cert-value' style='font-size:12px; font-family: monospace;'>{c['m_hash']}</div>
                 
                 <hr style='border: 1px solid #ddd;'>
                 <div class='cert-label' style='text-align:center;'>Final Verifiable Results</div>
-                <p style='text-align:center; font-size:32px; font-weight:bold; margin-top:10px; color:#000; letter-spacing:2px;'>{c['results']}</p>
+                <p style='text-align:center; font-size:32px; font-weight:bold; margin-top:10px; color:#000;'>{c['results']}</p>
             </div>
         """, unsafe_allow_html=True)
 
@@ -279,5 +278,15 @@ for idx, h in enumerate(st.session_state.history_data):
                 st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
                 st.rerun()
         if st.session_state.get(f"open_{idx}", False):
-            st.markdown(f"<div class='detail-box'><div style='line-height:1.8; margin-bottom:15px;'><span style='color:#00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br><span style='color:#00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br><span style='color:#00d4ff;'>●</span> <b>IT:</b> {h['IT']}</div><hr style='opacity:0.3;'><p style='font-family:monospace; font-size:12px; color:#aaa;'><b>VERIFICATION HASH:</b><br>{h['Hash']}</p></div>", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class='detail-box'>
+                    <div style='line-height: 1.8; margin-bottom:15px;'>
+                        <span style='color:#00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br>
+                        <span style='color:#00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br>
+                        <span style='color:#00d4ff;'>●</span> <b>IT:</b> {h['IT']}
+                    </div>
+                    <hr style='border: 0.5px solid #00d4ff; opacity: 0.3;'>
+                    <p style='font-family:monospace; font-size:12px; color:#aaa;'><b>VERIFICATION HASH:</b><br>{h['Hash']}</p>
+                </div>
+            """, unsafe_allow_html=True)
         st.markdown("<hr style='border:0.5px solid #222; margin:10px 0;'>", unsafe_allow_html=True)
