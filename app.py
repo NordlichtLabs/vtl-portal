@@ -73,6 +73,38 @@ if st.sidebar.button("🔄 System Reset"):
 # --- 4. HEADER ---
 st.title("🛡️ Verifiable Truth Layer (VTL)")
 
+# MARKETING MESSAGE
+st.markdown("""
+    <div style="margin-bottom: 20px; margin-top: 10px;">
+        <h2 style="color: #ffffff; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
+        <p style="font-size: 20px; line-height: 1.6; color: #ffffff; max-width: 1000px;">
+            In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
+            VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
+            dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.write("---")
+
+# HOW IT WORKS SEKTION
+st.subheader("How it works")
+hiw_col1, hiw_col2, hiw_col3 = st.columns(3)
+
+with hiw_col1:
+    st.markdown("### 1. Entropie fixieren")
+    st.write("Das System nutzt unvorhersehbare Echtzeit-Daten (wie Lottozahlen) als Basis. Da diese Werte erst in der Zukunft feststehen, kann niemand das Ergebnis manipulieren.")
+
+with hiw_col2:
+    st.markdown("### 2. Vault-Versiegelung")
+    st.write("Durch den individuellen Protocol-Salt wird die Berechnung 'gesalzen'. Dies verhindert, dass Dritte Ergebnisse vorab berechnen oder Muster erkennen.")
+
+with hiw_col3:
+    st.markdown("### 3. Mathematischer Beweis")
+    st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder Bürger jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
+
+st.write("---")
+
 # CLEAN MARKETING MESSAGE (WEISSE SCHRIFT, KEINE BOX)
 st.markdown("""
     <div style="margin-bottom: 40px; margin-top: 10px;">
