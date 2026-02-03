@@ -43,6 +43,7 @@ st.markdown("""
         border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px;
     }
     .status-locked { color: #ff4b4b; font-weight: bold; }
+    .entropy-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 10px; }
     .certificate h3, .certificate p, .certificate b { color: #000000 !important; }
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
     </style>
@@ -91,9 +92,14 @@ if choice == "VTL Generator":
             with c_l: st.markdown(f"**{label}**")
             with c_d: st.markdown(f"<p style='text-align:right; font-weight:bold;'>{today_str}</p>", unsafe_allow_html=True)
             return st.text_input(label, value=val, label_visibility="collapsed", key=key)
+        
         l_de = entropy_row("Quellwerte (DE)", "07, 14, 22, 31, 44, 49", "de")
         l_at = entropy_row("Quellwerte (AT)", "02, 18, 24, 33, 41, 45", "at")
         l_it = entropy_row("Quellwerte (IT)", "11, 23, 35, 56, 62, 88", "it")
+        
+        # HIER IST DER NEUE HINWEIS
+        st.markdown('<p class="entropy-hint">Hinweis: Die Quellwerte werden erst im Anschluss an die Ziehung angezeigt</p>', unsafe_allow_html=True)
+        
         m_entropy = f"{l_de}-{l_at}-{l_it}-{today_str}"
         p_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
