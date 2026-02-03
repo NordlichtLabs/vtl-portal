@@ -1,3 +1,7 @@
+
+
+
+
 import hashlib
 import time
 from datetime import datetime
@@ -31,37 +35,65 @@ st.markdown("""
     .login-btn { background-color: transparent; border: 1px solid #ffffff; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; }
     .signup-btn { background-color: #ffffff; color: #2e2e2e; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; }
 
-    /* How it works Cards */
-    .hiw-card { background-color: #363636; padding: 20px; border-radius: 10px; border-top: 4px solid #004a99; height: 100%; min-height: 200px; }
-    .hiw-number { color: #004a99; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+# --- HOW IT WORKS (BLAUE CARDS) ---
+st.subheader("Der VTL-Prozess: In 4 Schritten zur beweisbaren Wahrheit")
 
-    /* Zertifikat & Vault */
-    .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', Courier, monospace; position: relative; box-shadow: 10px 10px 20px rgba(0,0,0,0.5); }
-    .verified-seal { position: absolute; bottom: 20px; right: 20px; border: 3px double #28a745; color: #28a745; padding: 5px 10px; font-weight: bold; transform: rotate(-15deg); border-radius: 5px; font-size: 14px; opacity: 0.8; }
-    .vault-info { background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px; }
-    .status-locked { color: #ff4b4b; font-weight: bold; }
-    .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
-    .required-star { color: #ff4b4b; font-weight: bold; }
-    
-    .validator-info-text { font-size: 20px; line-height: 1.6; border-left: 5px solid #004a99; padding-left: 20px; margin-bottom: 30px; color: #ffffff; }
-    .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
-    .hist-hash-text { font-size: 14px; font-family: sans-serif; }
+st.markdown("""
+    <style>
+    .hiw-card {
+        background-color: #004a99; /* VTL Blau */
+        padding: 25px;
+        border-radius: 12px;
+        border-left: 5px solid #ffffff; /* Weißer Akzent links */
+        height: 100%;
+        min-height: 220px;
+        color: #ffffff; /* Weiße Schrift */
+    }
+    .hiw-number {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        opacity: 0.8;
+    }
+    .hiw-card b {
+        font-size: 18px;
+        color: #ffffff !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. TOP NAVIGATION / LOGIN ---
-head_col1, head_col2 = st.columns([4, 1])
-with head_col1:
-    st.title("🛡️ Verifiable Truth Layer (VTL)")
-with head_col2:
-    st.markdown('<div style="text-align: right; padding-top: 15px;"><a class="login-btn">Login</a><a class="signup-btn">Sign-up</a></div>', unsafe_allow_html=True)
+hiw_col1, hiw_col2, hiw_col3, hiw_col4 = st.columns(4)
 
-# --- 4. SIDEBAR ---
-choice = st.sidebar.radio("Bereich wählen:", ["VTL Generator", "Public Validator"])
-if st.sidebar.button("🔄 System Reset"):
-    st.session_state.registered_salts = []
-    st.session_state.selected_hist_idx = None
-    st.rerun()
+with hiw_col1:
+    st.markdown("""<div class="hiw-card">
+        <div class="hiw-number">1.</div>
+        <b>Individuelle Versiegelung</b><br><br>
+        Der Prozess beginnt mit Ihrem privaten <b>Protocol-Salt</b>. Dieser wird im VTL Vault zeitgestempelt versiegelt.
+    </div>""", unsafe_allow_html=True)
+
+with hiw_col2:
+    st.markdown("""<div class="hiw-card">
+        <div class="hiw-number">2.</div>
+        <b>Entropie-Fixierung</b><br><br>
+        Sobald die Lottoziehungen abgeschlossen sind, werden diese als unveränderbarer <b>Entropy-Hash</b> fixiert.
+    </div>""", unsafe_allow_html=True)
+
+with hiw_col3:
+    st.markdown("""<div class="hiw-card">
+        <div class="hiw-number">3.</div>
+        <b>Kryptografische Kopplung</b><br><br>
+        Ihr privater Salt wird mit dem Entropy-Hash zum <b>Master-Hash</b> verknüpft – dem Fingerabdruck Ihrer Ziehung.
+    </div>""", unsafe_allow_html=True)
+
+with hiw_col4:
+    st.markdown("""<div class="hiw-card">
+        <div class="hiw-number">4.</div>
+        <b>Beweisbarer Output</b><br><br>
+        Aus dem Master-Hash entstehen Ihre Zahlen. Das <b>Audit Certificate</b> macht den Vorgang im Validator beweisbar.
+    </div>""", unsafe_allow_html=True)
+
+st.write("---")
 
 # --- 5. CONTENT STEUERUNG ---
 if choice == "VTL Generator":
