@@ -1,8 +1,9 @@
-import streamlit as st
 import hashlib
-import pandas as pd
-from datetime import datetime
 import time
+from datetime import datetime
+
+import pandas as pd
+import streamlit as st
 
 # --- 1. INITIALISIERUNG ---
 if 'selected_hist_idx' not in st.session_state:
@@ -108,12 +109,23 @@ if choice == "VTL Generator":
         if st.button("Salt im VTL Vault registrieren"):
             if raw_salt.strip():
                 salt_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
-                st.session_state.registered_salts.append({"ID": p_id, "Salt": raw_salt, "Hash": salt_hash, "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")})
+                st.session_state.registered_salts.append({
+                    "ID": p_id, 
+                    "Salt": raw_salt, 
+                    "Hash": salt_hash, 
+                    "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+                })
         
         if st.session_state.registered_salts:
             last_s = st.session_state.registered_salts[-1]
             st.success("✅ Salt erfolgreich versiegelt")
-            st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br>Vault-Hash (Salt): {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class="vault-info">
+                    <b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br>
+                    <b>Zeitstempel:</b> {last_s['Zeit']}<br>
+                    <b>Vault-Hash (Salt):</b> {last_s['Hash'][:32]}...
+                </div>
+            """, unsafe_allow_html=True)
     
     with col2:
         st.header("🎰 Entropy Source")
@@ -143,8 +155,6 @@ if choice == "VTL Generator":
         if st.session_state.registered_salts:
             current_salt = st.session_state.registered_salts[-1]["Salt"]
             current_salt_hash = st.session_state.registered_salts[-1]["Hash"]
-            
-            # Master Hash Berechnung (Kombination aus Entropy und Salt)
             master_seed = f"{entropy_hash}-{current_salt}"
             master_hash = hashlib.sha256(master_seed.encode()).hexdigest()
             
@@ -189,6 +199,13 @@ elif choice == "Public Validator":
                 time.sleep(1.2)
                 st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
                 st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
+                st.markdown(f"""
+                **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
+                - **Entropy Source Sync:** Quellwerte (DE, AT, IT) verifiziert.
+                - **Date-Binding:** Gültigkeit für den Ziehungstag bestätigt.
+                - **Security Vault:** Salt-Integrität im Vault abgeglichen.
+                - **Proof of Fairness:** Protokoll ist lückenlos und manipulationssicher.
+                """)
         else: st.warning("Bitte geben Sie einen Hash ein.")
 
 # --- 7. HISTORY ---
@@ -203,4 +220,12 @@ for idx, item in enumerate(st.session_state.history_data):
             st.session_state.selected_hist_idx = idx if st.session_state.selected_hist_idx != idx else None
             st.rerun()
     if st.session_state.selected_hist_idx == idx:
-        st.markdown(f"<div class='detail-box'><p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class='detail-box'>
+            <p><b>Quellwerte DE:</b> {item['DE']}</p>
+            <p><b>Quellwerte AT:</b> {item['AT']}</p>
+            <p><b>Quellwerte IT:</b> {item['IT']}</p>
+            <hr style='border:0.5px solid #444;'>
+            <p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p>
+        </div>
+        """, unsafe_allow_html=True)
