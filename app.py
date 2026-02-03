@@ -75,7 +75,7 @@ if st.sidebar.button("🔄 System Reset"):
 if choice == "VTL Generator":
     # Marketing & Problem Section
     st.markdown("""
-        <div style="margin-top: 10px;">
+        <div style="margin-top: 12px;">
             <h2 style="color: #ffffff !important; margin-bottom: 5px;">„Don't Trust, Verify“</h2>
             <div class="problem-description">
                 Das Problem herkömmlicher Zufallsgeneratoren: Ein digitales Blindvertrauen. Die meisten heutigen Systeme zur Zufallszahlengenerierung sind eine <b>Blackbox</b>. 
