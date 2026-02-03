@@ -44,17 +44,7 @@ st.markdown("""
     .vault-info { background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .status-locked { color: #ff4b4b; font-weight: bold; }
     
-    .timer-container {
-        border: 1px solid #ff4b4b;
-        background-color: rgba(255, 75, 75, 0.05);
-        border-radius: 8px;
-        height: 45px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #ff4b4b;
-    }
+    .timer-container { border: 1px solid #ff4b4b; background-color: rgba(255, 75, 75, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff4b4b; }
     .timer-label { font-size: 9px; font-weight: bold; margin-bottom: -4px; letter-spacing: 0.5px; }
     .timer-value { font-size: 18px; font-weight: bold; font-family: 'Courier New', Courier, monospace; }
     
@@ -69,7 +59,7 @@ with head_col1:
 with head_col2:
     st.markdown('<div style="text-align: right; padding-top: 15px;"><a class="login-btn">Login</a><a class="signup-btn">Sign-up</a></div>', unsafe_allow_html=True)
 
-# --- 4. TEXT SECTION ---
+# --- 4. INTRO SECTION ---
 st.markdown("""
     <div style="margin-top: 20px;">
         <div class="problem-description">
@@ -88,7 +78,7 @@ st.markdown("""
 
 st.write("---")
 
-# --- 5. HOW IT WORKS ---
+# --- 5. PROCESS CARDS ---
 st.subheader("Der VTL-Prozess: In 4 Schritten zur beweisbaren Wahrheit")
 hiw_col1, hiw_col2, hiw_col3, hiw_col4 = st.columns(4)
 with hiw_col1:
@@ -148,6 +138,14 @@ with col1:
             """, unsafe_allow_html=True)
 
     if st.session_state.registered_salts:
+        # Hier ist dein neuer Erklärungstext eingebaut
+        st.markdown("""
+            <div style="font-size: 13px; color: #ffffff; margin-top: 15px; margin-bottom: 10px; line-height: 1.4;">
+                <b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr individueller Protokoll-Key muss vor der offiziellen Ziehung versiegelt sein. 
+                Der Cut-Off stellt sicher, dass nachträgliche Manipulationen am Ergebnis ausgeschlossen sind. <i>Don't Trust, Verify.</i>
+            </div>
+        """, unsafe_allow_html=True)
+        
         last_s = st.session_state.registered_salts[-1]
         st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br><b>Zeitstempel:</b> {last_s['Zeit']}<br><b>Vault-Hash:</b> {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
 
@@ -216,7 +214,7 @@ st.markdown("""
             Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
             Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
             offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, 
-            wird die Integrität bestätigt – so wird aus blindem Vertrauen beweisbare Sicherheit.
+            wird die Integrität bestätigt.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -228,7 +226,6 @@ if st.button("Integrität prüfen"):
             time.sleep(1.2)
             st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
             st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
-            # WIEDER EINGEBAUT: Das detaillierte Protokoll
             st.markdown(f"""
             **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
             - **Entropy Source Sync:** Quellwerte (DE, AT, IT) verifiziert.
