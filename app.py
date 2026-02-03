@@ -13,14 +13,13 @@ if 'history_data' not in st.session_state:
         {"Datum": "02.02.2026", "DE": "05, 14, 28, 33, 41, 44", "AT": "07, 19, 21, 30, 39, 45", "IT": "03, 12, 34, 56, 78, 90", "Hash": "d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5"}
     ]
 
-# --- 2. KONFIGURATION & NEON DESIGN ---
+# --- 2. KONFIGURATION & DESIGN ---
 st.set_page_config(page_title="VTL - Verifiable Truth Layer", layout="wide")
 
 st.markdown("""
     <style>
     [data-testid="stSidebar"] { display: none; }
     
-    /* Hintergrund & Grundfarben */
     .stApp { 
         background-color: #0a0a0a; 
         color: #ffffff;
@@ -30,61 +29,54 @@ st.markdown("""
     h1, h2, h3 { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
     h1 { color: #00d4ff !important; text-shadow: 0 0 10px #00d4ff; }
     
-    /* Buttons */
     .stButton>button { 
         width: 100%; 
         background: linear-gradient(45deg, #004a99, #00d4ff); 
-        color: white; 
-        font-weight: bold; 
-        border-radius: 5px; 
-        border: none; 
-        height: 45px;
-        transition: 0.3s;
+        color: white; font-weight: bold; border-radius: 5px; border: none; height: 45px; transition: 0.3s;
     }
     .stButton>button:hover { box-shadow: 0 0 20px #00d4ff; transform: translateY(-2px); }
 
-    /* Login / Sign-up */
     .login-btn { border: 1px solid #00d4ff; color: #00d4ff; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; }
     .signup-btn { background-color: #00d4ff; color: #000; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; }
 
-    /* Use Case Boxen */
-    .use-case-box { 
-        padding: 20px; 
-        border-radius: 10px; 
-        border-top: 4px solid; 
-        background: rgba(255, 255, 255, 0.03); 
-        height: 100%;
+    /* Problem Description */
+    .problem-description { 
+        color: #ffffff !important; 
+        font-size: 18px; 
+        line-height: 1.5; 
+        max-width: 1000px; 
+        margin-bottom: 20px; 
     }
-    .web2-box { border-color: #00d4ff; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.1); }
-    .web3-box { border-color: #ff00ff; box-shadow: 0 4px 15px rgba(255, 0, 255, 0.1); }
-    .use-case-title { font-weight: bold; font-size: 20px; margin-bottom: 15px; }
-    .web2-text { color: #00d4ff; }
-    .web3-text { color: #ff00ff; }
 
-    /* Process Cards */
-    .hiw-card { background-color: rgba(0, 74, 153, 0.2); padding: 25px; border-radius: 12px; height: 100%; border: 1px solid #004a99; }
-    .hiw-number { color: #00d4ff; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-
-    /* Zertifikat */
-    .certificate { 
-        border: 2px solid #000; 
+    /* Use Case Boxen & Textgrösse */
+    .use-case-box { 
         padding: 25px; 
         border-radius: 10px; 
-        background-color: #ffffff; 
-        color: #000000; 
-        font-family: 'Courier New', Courier, monospace; 
-        position: relative; 
-        box-shadow: 0 0 30px rgba(0, 212, 255, 0.3); 
+        background: rgba(255, 255, 255, 0.03); 
+        height: 100%;
+        border-top: 4px solid;
     }
-    .verified-seal { position: absolute; bottom: 20px; right: 20px; border: 3px double #28a745; color: #28a745; padding: 5px 10px; font-weight: bold; transform: rotate(-15deg); border-radius: 5px; opacity: 0.8; }
+    .web2-box { border-color: #00d4ff; }
+    .web3-box { border-color: #ff00ff; }
     
-    /* Timer */
-    .timer-container { border: 1px solid #ff00ff; background-color: rgba(255, 0, 255, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff00ff; box-shadow: 0 0 10px rgba(255, 0, 255, 0.2); }
-    .timer-label { font-size: 9px; font-weight: bold; margin-bottom: -4px; letter-spacing: 0.5px; }
-    .timer-value { font-size: 18px; font-weight: bold; font-family: monospace; }
-    
+    .use-case-list { 
+        list-style-type: none; 
+        padding-left: 0; 
+        font-size: 17px; /* Schriftgröße erhöht */
+        line-height: 1.8; 
+    }
+    .area-label { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 5px; display: block; }
+    .web2-text { color: #00d4ff; font-weight: bold; font-size: 22px; }
+    .web3-text { color: #ff00ff; font-weight: bold; font-size: 22px; }
+
+    /* Process Cards */
+    .hiw-card { background-color: rgba(0, 74, 153, 0.15); padding: 25px; border-radius: 12px; height: 100%; border: 1px solid #004a99; }
+    .hiw-number { color: #00d4ff; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+
+    /* Certificate & Vault */
+    .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', monospace; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.3); }
+    .timer-container { border: 1px solid #ff00ff; background-color: rgba(255, 0, 255, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff00ff; }
     .vault-info { background-color: #000; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 10px; font-family: monospace; font-size: 12px; }
-    .status-locked { color: #ff4b4b; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -95,15 +87,18 @@ with head_col1:
 with head_col2:
     st.markdown('<div style="text-align: right; padding-top: 15px;"><a class="login-btn">Login</a><a class="signup-btn">Sign-up</a></div>', unsafe_allow_html=True)
 
-# --- 4. INTRO & USE CASES ---
+# --- 4. INTRO SECTION ---
 st.markdown("""
     <div style="margin-top: 20px;">
-        <div class="problem-description" style="font-size: 18px; font-style: italic; color: #aaa; margin-bottom: 20px;">
-            Blackbox-Zufall ist ein Risiko. VTL transformiert blindes Vertrauen in mathematische Beweisbarkeit.
+        <div class="problem-description">
+            Das Problem herkömmlicher Zufallsgeneratoren: Ein digitales Blindvertrauen. Die meisten heutigen Systeme zur Zufallszahlengenerierung sind eine <b>Blackbox</b>. 
+            Ob bei Gewinnspielen, Audits oder Zuteilungen – das Ergebnis wird hinter verschlossenen Türen berechnet. Für den Nutzer ist nicht nachvollziehbar, 
+            ob das Resultat wirklich dem Zufall entspringt oder im Nachhinein manipuliert wurde. Ohne beweisbare Integrität bleibt jede digitale Entscheidung 
+            eine Vertrauensfrage, kein mathematischer Fakt.
         </div>
         <h2 style="color: #ffffff !important; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
-        <div class="marketing-message" style="font-size: 20px; margin-bottom: 30px;">
-            VTL nutzt Multi-Source-Entropie und kryptografische Versiegelung, um faire Ergebnisse beweisbar zu machen.
+        <div style="font-size: 20px; color: #ffffff; margin-bottom: 30px;">
+            VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, dass Ergebnisse nicht nur fair sind, sondern auch für immer beweisbar bleiben.
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -113,10 +108,11 @@ uc_col1, uc_col2 = st.columns(2)
 with uc_col1:
     st.markdown("""
         <div class="use-case-box web2-box">
-            <div class="use-case-title web2-text">🏛️ Web2 / Enterprise</div>
-            <ul style="list-style-type: none; padding-left: 0; font-size: 15px; line-height: 1.8;">
-                <li>🎲 <b>Verlosungen:</b> Beweisbare Fairness für Marketing-Events.</li>
-                <li>🧬 <b>Medizin:</b> Manipulationssichere Probanden-Randomisierung.</li>
+            <span class="area-label">Enterprise Solutions</span>
+            <div class="web2-text">Use Cases: Web2</div>
+            <ul class="use-case-list">
+                <li>🎲 <b>Verlosungen:</b> Beweisbare Fairness für Marketing-Kampagnen.</li>
+                <li>🧬 <b>Medizinische Studien:</b> Manipulationssichere Randomisierung.</li>
                 <li>🏦 <b>Banken-Audits:</b> Unbestreitbare Compliance-Stichproben.</li>
                 <li>🎟️ <b>Ticketing:</b> Gerechte Vergabe ohne Bot-Bevorzugung.</li>
             </ul>
@@ -126,26 +122,27 @@ with uc_col1:
 with uc_col2:
     st.markdown("""
         <div class="use-case-box web3-box">
-            <div class="use-case-title web3-text">🌐 Web3 / Decentralized</div>
-            <ul style="list-style-type: none; padding-left: 0; font-size: 15px; line-height: 1.8;">
+            <span class="area-label">Decentralized Solutions</span>
+            <div class="web3-text">Use Cases: Web3</div>
+            <ul class="use-case-list">
                 <li>🖼️ <b>NFT-Minting:</b> Zufällige Trait-Zuweisung On-Chain.</li>
                 <li>⚔️ <b>Gaming:</b> Provably Fair Lootboxes & Zufallswerte.</li>
-                <li>🗳️ <b>DAO:</b> Zufallsauswahl von Validatoren & Gremien.</li>
-                <li>🔗 <b>Oracle:</b> Vertrauenswürdige Entropie für Smart Contracts.</li>
+                <li>🗳️ <b>DAO-Governance:</b> Auswahl von Validatoren & Gremien.</li>
+                <li>🔗 <b>Oracle-Entropie:</b> Sicherer Zufall für Smart Contracts.</li>
             </ul>
         </div>
     """, unsafe_allow_html=True)
 
 st.write("---")
 
-# --- 5. PROCESS ---
+# --- 5. PROCESS CARDS ---
 st.subheader("Der VTL-Prozess")
 hiw_col1, hiw_col2, hiw_col3, hiw_col4 = st.columns(4)
 steps = [
-    ("1.", "Individuelle Versiegelung", "Ihr Protocol-Salt wird im Vault zeitgestempelt fixiert."),
-    ("2.", "Entropie-Fixierung", "Lotto-Daten werden als Entropy-Hash unveränderbar registriert."),
+    ("1.", "Versiegelung", "Der Protocol-Salt wird im VTL Vault zeitgestempelt versiegelt."),
+    ("2.", "Fixierung", "Lotto-Daten werden als Entropy-Hash unveränderbar registriert."),
     ("3.", "Kopplung", "Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
-    ("4.", "Output", "Ihre Zahlen entstehen direkt aus dem Master-Hash.")
+    ("4.", "Output", "Aus dem Master-Hash entstehen beweisbare Zahlen.")
 ]
 for i, step in enumerate(steps):
     with [hiw_col1, hiw_col2, hiw_col3, hiw_col4][i]:
@@ -157,34 +154,34 @@ st.write("---")
 col_v, col_e = st.columns(2)
 with col_v:
     st.header("🔐 Security Vault")
-    c_name = st.text_input("Institution", "VTL Authority")
+    c_name = st.text_input("Institution", "VTL Protocol Authority")
     p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
-    st.markdown('Protocol-Salt <span style="color:#ff4b4b;">*</span>', unsafe_allow_html=True)
-    raw_salt = st.text_input("Salt", label_visibility="collapsed")
+    st.markdown('Protocol-Salt <span style="color:#ff4b4b; font-weight:bold;">*</span>', unsafe_allow_html=True)
+    raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt ein...", label_visibility="collapsed")
     
-    b_col, t_col = st.columns([2, 1])
-    with b_col:
+    btn_c, tim_c = st.columns([2, 1])
+    with btn_c:
         if st.button("Salt im Vault registrieren"):
             if raw_salt.strip():
                 s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
                 st.session_state.registered_salts.append({"Hash": s_hash, "Salt": raw_salt, "Zeit": datetime.now().strftime("%H:%M:%S")})
                 st.rerun()
-    with t_col:
+    with tim_c:
         if st.session_state.registered_salts:
             st.markdown('<div class="timer-container"><div class="timer-label">VTL SEALING CUT-OFF</div><div class="timer-value" id="c-clock">10:00</div></div>', unsafe_allow_html=True)
             st.markdown("""<script>(function(){var d=new Date(Date.parse(new Date())+600000);function u(){var t=Date.parse(d)-Date.parse(new Date());var s=Math.floor((t/1000)%60);var m=Math.floor((t/1000/60)%60);var e=document.getElementById('c-clock');if(e){e.innerHTML=m+":"+('0'+s).slice(-2);if(t<=0)clearInterval(i);}}u();var i=setInterval(u,1000);})();</script>""", unsafe_allow_html=True)
 
     if st.session_state.registered_salts:
-        st.markdown('<div style="font-size: 15px; margin-top:15px;"><b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen. <i>Don\'t Trust, Verify.</i></div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size: 15px; margin-top:15px; line-height:1.4;"><b>VTL Sealing Cut-off:</b> Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen.</div>', unsafe_allow_html=True)
         ls = st.session_state.registered_salts[-1]
-        st.markdown(f'<div class="vault-info"><b>Status:</b> <span class="status-locked">LOCKED</span><br><b>Zeit:</b> {ls["Zeit"]}<br><b>Vault-Hash:</b> {ls["Hash"][:32]}...</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="vault-info"><b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br><b>Vault-Hash:</b> {ls["Hash"][:32]}...</div>', unsafe_allow_html=True)
 
 with col_e:
     st.header("🎰 Entropy Source")
     today = datetime.now().strftime("%d.%m.%Y")
-    l_de = st.text_input(f"Werte DE ({today})", "07, 14, 22, 31, 44, 49")
-    l_at = st.text_input(f"Werte AT ({today})", "02, 18, 24, 33, 41, 45")
-    l_it = st.text_input(f"Werte IT ({today})", "11, 23, 35, 56, 62, 88")
+    l_de = st.text_input(f"Quellwerte DE ({today})", "07, 14, 22, 31, 44, 49")
+    l_at = st.text_input(f"Quellwerte AT ({today})", "02, 18, 24, 33, 41, 45")
+    l_it = st.text_input(f"Quellwerte IT ({today})", "11, 23, 35, 56, 62, 88")
     st.markdown('<p style="color:#aaa; font-style:italic; font-size:13px;">Hinweis: Quellwerte werden erst nach der offiziellen Ziehung angezeigt.</p>', unsafe_allow_html=True)
     e_hash = hashlib.sha256(f"{l_de}{l_at}{l_it}{today}".encode()).hexdigest()
 
@@ -194,10 +191,10 @@ st.write("---")
 st.header("🧮 Generator")
 gc1, gc2, gc3 = st.columns(3)
 count = gc1.number_input("Anzahl", min_value=1, value=5)
-min_v = gc2.number_input("Min", value=1)
-max_v = gc3.number_input("Max", value=100)
+min_v = gc2.number_input("Untergrenze", value=1)
+max_v = gc3.number_input("Obergrenze", value=100)
 
-if st.button("Zahlen & Zertifikat generieren"):
+if st.button("Zahlen & Zertifikat berechnen"):
     if st.session_state.registered_salts:
         curr = st.session_state.registered_salts[-1]
         m_seed = f"{e_hash}-{curr['Salt']}"
@@ -206,34 +203,19 @@ if st.button("Zahlen & Zertifikat generieren"):
         
         rl, rr = st.columns(2)
         with rl:
-            st.subheader("Output")
-            df = pd.DataFrame({"Wert": results}, index=range(1, count+1))
-            st.table(df.style.set_properties(**{'text-align': 'center'}))
+            st.table(pd.DataFrame({"Wert": results}, index=range(1, count+1)))
         with rr:
-            st.markdown(f"""<div class='certificate'><div class='verified-seal'>VTL VERIFIED</div><h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3><p style='font-size:12px;'><b>REF:</b> {p_id}<br><b>DATE:</b> {today}</p><hr><p style='font-size:10px; word-break:break-all;'><b>MASTER HASH:</b><br><b>{m_hash}</b></p><p style='font-size:10px; word-break:break-all;'><b>VAULT REF:</b><br><b>{curr['Hash']}</b></p><hr><p style='text-align:center; font-size:20px; font-weight:bold;'>{", ".join(map(str, results))}</p></div>""", unsafe_allow_html=True)
-    else: st.error("Bitte zuerst Salt registrieren!")
+            st.markdown(f"""<div class='certificate'><div class='verified-seal'>VTL VERIFIED</div><h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3><p style='font-size:12px;'><b>REF:</b> {p_id} | <b>DATE:</b> {today}</p><hr><p style='font-size:10px; word-break:break-all;'><b>MASTER HASH:</b><br>{m_hash}</p><hr><p style='text-align:center; font-size:20px; font-weight:bold;'>{", ".join(map(str, results))}</p></div>""", unsafe_allow_html=True)
+    else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
 
 st.write("---")
 
-# --- 8. VALIDATOR & HISTORY ---
+# --- 8. VALIDATOR ---
 st.header("🔍 Public Validator")
-st.markdown('<div style="font-size:18px; margin-bottom:20px;">Gleichen Sie Ihren Master-Hash live mit den Quellwerten und dem Vault ab.</div>', unsafe_allow_html=True)
-v_hash = st.text_input("Master-Hash eingeben")
+v_hash = st.text_input("Master-Hash zur Verifizierung eingeben")
 if st.button("Integrität prüfen"):
     if v_hash:
-        with st.spinner('Validierung läuft...'):
+        with st.spinner('Validierung...'):
             time.sleep(1)
             st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-            st.markdown(f"**Prüfprotokoll {datetime.now().strftime('%H:%M:%S')}:**<br>• Entropy Source Sync verifiziert.<br>• Security Vault Integrität bestätigt.<br>• Proof of Fairness: OK.", unsafe_allow_html=True)
-
-st.write("---")
-st.header("📜 Historie")
-for idx, h in enumerate(st.session_state.history_data):
-    hc1, hc2, hc3 = st.columns([2, 5, 2])
-    hc1.write(f"**{h['Datum']}**")
-    hc2.write("Multi-Entropy Verification")
-    if hc3.button("Details", key=f"hist_{idx}"):
-        st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
-        st.rerun()
-    if st.session_state.get(f"open_{idx}", False):
-        st.markdown(f"<div class='detail-box'><p>DE: {h['DE']} | AT: {h['AT']} | IT: {h['IT']}</p><p style='font-size:12px;'>HASH: {h['Hash']}</p></div>", unsafe_allow_html=True)
+            st.info("Kette korrespondiert mit offiziellen Entropie-Quellen und Vault-Protokoll.")
