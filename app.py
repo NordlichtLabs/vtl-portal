@@ -44,23 +44,22 @@ st.markdown("""
     .vault-info { background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .status-locked { color: #ff4b4b; font-weight: bold; }
     
-    /* Timer Style */
-    .expiry-timer-box { 
-        background-color: #1a1a1a; 
-        border: 1px solid #ff4b4b; 
-        border-radius: 8px; 
-        height: 45px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        color: #ff4b4b; 
-        font-weight: bold; 
-        font-family: monospace;
-        font-size: 18px;
+    /* Cut-Off Timer Style */
+    .timer-container {
+        border: 1px solid #ff4b4b;
+        background-color: rgba(255, 75, 75, 0.05);
+        border-radius: 8px;
+        height: 45px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #ff4b4b;
     }
+    .timer-label { font-size: 9px; font-weight: bold; margin-bottom: -4px; letter-spacing: 0.5px; }
+    .timer-value { font-size: 18px; font-weight: bold; font-family: 'Courier New', Courier, monospace; }
     
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
-    .hist-hash-text { font-size: 14px; font-family: sans-serif; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -71,7 +70,7 @@ with head_col1:
 with head_col2:
     st.markdown('<div style="text-align: right; padding-top: 15px;"><a class="login-btn">Login</a><a class="signup-btn">Sign-up</a></div>', unsafe_allow_html=True)
 
-# --- 4. PROBLEM & MISSION ---
+# --- 4. TEXT SECTION ---
 st.markdown("""
     <div style="margin-top: 20px;">
         <div class="problem-description">
@@ -113,33 +112,39 @@ with col1:
     st.markdown('Protocol-Salt *', unsafe_allow_html=True)
     raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt zur Versiegelung ein...", label_visibility="collapsed")
     
-    # Button & Timer Reihe
     btn_col, timer_col = st.columns([2, 1])
     with btn_col:
-        register_click = st.button("Salt im VTL Vault registrieren")
-        if register_click and raw_salt.strip():
-            s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
-            st.session_state.registered_salts.append({
-                "ID": p_id, "Salt": raw_salt, "Hash": s_hash, "Zeit": datetime.now().strftime("%H:%M:%S")
-            })
-    
+        if st.button("Salt im VTL Vault registrieren"):
+            if raw_salt.strip():
+                s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
+                st.session_state.registered_salts.append({
+                    "ID": p_id, "Salt": raw_salt, "Hash": s_hash, "Zeit": datetime.now().strftime("%H:%M:%S")
+                })
+                st.rerun()
+
     with timer_col:
         if st.session_state.registered_salts:
-            st.markdown(f"""
-                <div class="expiry-timer-box">
-                    <span style="font-size: 10px; margin-right: 8px;">SALT EXPIRY:</span>
-                    <span id="expiry-timer">10:00</span>
+            st.markdown("""
+                <div class="timer-container">
+                    <div class="timer-label">VTL SEALING CUT-OFF</div>
+                    <div class="timer-value" id="cutoff-clock">10:00</div>
                 </div>
                 <script>
-                    var duration = 600;
-                    var timerDisplay = document.getElementById('expiry-timer');
-                    var countdown = setInterval(function () {{
-                        var mins = parseInt(duration / 60, 10);
-                        var secs = parseInt(duration % 60, 10);
-                        secs = secs < 10 ? "0" + secs : secs;
-                        timerDisplay.textContent = mins + ":" + secs;
-                        if (--duration < 0) clearInterval(countdown);
-                    }}, 1000);
+                (function() {
+                    var deadline = new Date(Date.parse(new Date()) + 10*60*1000);
+                    function updateClock(){
+                        var t = Date.parse(deadline) - Date.parse(new Date());
+                        var s = Math.floor((t/1000)%60);
+                        var m = Math.floor((t/1000/60)%60);
+                        var d = document.getElementById('cutoff-clock');
+                        if(d) {
+                            d.innerHTML = m + ":" + ('0' + s).slice(-2);
+                            if(t <= 0) clearInterval(timeinterval);
+                        }
+                    }
+                    updateClock();
+                    var timeinterval = setInterval(updateClock,1000);
+                })();
                 </script>
             """, unsafe_allow_html=True)
 
@@ -211,20 +216,17 @@ st.markdown("""
         <div style="font-size: 18px; color: #ffffff; line-height: 1.5; max-width: 1000px;">
             Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
             Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
-            offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, 
-            wird die Integrität bestätigt – so wird aus blindem Vertrauen beweisbare Sicherheit.
+            offiziellen Entropie-Quellen ab.
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-cert_id = st.text_input("Master-Hash zur Verifizierung eingeben", key="val_input_field", placeholder="Geben Sie hier den Hash vom Zertifikat ein...")
+cert_id = st.text_input("Master-Hash zur Verifizierung eingeben", key="val_input_field", placeholder="f3b2c1a9e8...")
 if st.button("Integrität prüfen"):
     if cert_id:
         with st.spinner('Kette wird rekonstruiert...'):
             time.sleep(1.2)
             st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-            st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
-            st.markdown(f"**Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**\n- **Entropy Source Sync:** Quellwerte verifiziert.\n- **Date-Binding:** Gültigkeit bestätigt.\n- **Security Vault:** Salt-Integrität abgeglichen.\n- **Proof of Fairness:** Protokoll ist manipulationssicher.")
 
 st.write("---")
 
@@ -239,4 +241,4 @@ for idx, item in enumerate(st.session_state.history_data):
             st.session_state[f"hist_open_{idx}"] = not st.session_state.get(f"hist_open_{idx}", False)
             st.rerun()
     if st.session_state.get(f"hist_open_{idx}", False):
-        st.markdown(f"<div class='detail-box'><p><b>Quellwerte DE:</b> {item['DE']}</p><p><b>Quellwerte AT:</b> {item['AT']}</p><p><b>Quellwerte IT:</b> {item['IT']}</p><hr style='border:0.5px solid #444;'><p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='detail-box'><p><b>Quellwerte DE:</b> {item['DE']}</p><p><b>Quellwerte AT:</b> {item['AT']}</p><p><b>Quellwerte IT:</b> {item['IT']}</p><hr style='border:0.5px solid #444;'><p style='font-family: sans-serif; font-size: 14px;'><b>SHA-256 HASH:</b> {item['Hash']}</p></div>", unsafe_allow_html=True)
