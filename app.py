@@ -23,6 +23,9 @@ st.markdown("""
     .stApp { background-color: #2e2e2e; color: #ffffff; }
     [data-testid="stSidebar"] { background-color: #2e2e2e; border-right: 1px solid #444; }
     
+    /* Einheitliches Blau für alle Überschriften */
+    h1, h2, h3, .blue-header { color: #004a99 !important; }
+    
     /* Buttons */
     .stButton>button { width: 100%; background-color: #004a99; color: white; font-weight: bold; border-radius: 8px; border: none; height: 45px; }
     .stDownloadButton>button { background-color: #28a745 !important; color: white !important; }
@@ -31,8 +34,8 @@ st.markdown("""
     .login-btn { background-color: transparent; border: 1px solid #ffffff; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; cursor: pointer; }
     .signup-btn { background-color: #ffffff; color: #2e2e2e; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; }
 
-    /* How it works Cards (BLAU MIT WEISS) */
-    .hiw-card { background-color: #004a99; padding: 25px; border-radius: 12px; border-left: 5px solid #ffffff; height: 100%; min-height: 220px; color: #ffffff; }
+    /* How it works Cards (Blau ohne weißen Schatten/Border) */
+    .hiw-card { background-color: #004a99; padding: 25px; border-radius: 12px; height: 100%; min-height: 220px; color: #ffffff; border: none; }
     .hiw-number { color: #ffffff; font-size: 28px; font-weight: bold; margin-bottom: 15px; opacity: 0.8; }
     .hiw-card b { font-size: 18px; color: #ffffff !important; }
 
@@ -69,7 +72,7 @@ if choice == "VTL Generator":
     # Marketing Message
     st.markdown("""
         <div style="margin-bottom: 20px; margin-top: 10px;">
-            <h2 style="color: #ffffff; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
+            <h2 style="color: #ffffff !important; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
             <p style="font-size: 20px; line-height: 1.6; color: #ffffff; max-width: 1000px;">
                 In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
                 VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
@@ -79,7 +82,7 @@ if choice == "VTL Generator":
         """, unsafe_allow_html=True)
     st.write("---")
 
-    # How it works Sektion (BLAUE CARDS)
+    # How it works Sektion
     st.subheader("Der VTL-Prozess: In 4 Schritten zur beweisbaren Wahrheit")
     hiw_col1, hiw_col2, hiw_col3, hiw_col4 = st.columns(4)
     with hiw_col1:
@@ -106,23 +109,12 @@ if choice == "VTL Generator":
         if st.button("Salt im VTL Vault registrieren"):
             if raw_salt.strip():
                 s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
-                st.session_state.registered_salts.append({
-                    "ID": p_id, 
-                    "Salt": raw_salt, 
-                    "Hash": s_hash, 
-                    "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-                })
+                st.session_state.registered_salts.append({"ID": p_id, "Salt": raw_salt, "Hash": s_hash, "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")})
         
         if st.session_state.registered_salts:
             last_s = st.session_state.registered_salts[-1]
             st.success("✅ Salt erfolgreich versiegelt")
-            st.markdown(f"""
-                <div class="vault-info">
-                    <b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br>
-                    <b>Zeitstempel:</b> {last_s['Zeit']}<br>
-                    <b>Vault-Hash (Salt):</b> {last_s['Hash'][:32]}...
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br><b>Zeitstempel:</b> {last_s['Zeit']}<br><b>Vault-Hash (Salt):</b> {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
 
     with col2:
         st.header("🎰 Entropy Source")
@@ -154,32 +146,18 @@ if choice == "VTL Generator":
             curr_sh = st.session_state.registered_salts[-1]["Hash"]
             m_seed = f"{e_hash}-{curr_s}"
             m_hash = hashlib.sha256(m_seed.encode()).hexdigest()
-            
             results = [(int(hashlib.sha256(f"{m_hash}-{i}".encode()).hexdigest(), 16) % (max_v - min_v + 1)) + min_v for i in range(1, count + 1)]
             
             res_l, res_r = st.columns(2)
             with res_l:
                 st.subheader("Generierte Output-Werte")
                 st.table(pd.DataFrame({"Index": range(1, count+1), "Wert": results}).set_index("Index"))
-            
             with res_r:
                 res_str = ", ".join(map(str, results))
-                st.markdown(f"""
-                <div class='certificate'>
-                    <div class='verified-seal'>VTL VERIFIED</div>
-                    <h3 style='margin-top:0; font-size:16px;'>VTL AUDIT CERTIFICATE</h3>
-                    <p style='font-size:12px;'><b>ENTITY:</b> {c_name}<br><b>REF-ID:</b> {p_id}<br><b>DATE:</b> {today_str}</p>
-                    <hr style='border:1px solid #eee;'>
-                    <p style='font-size:10px; word-break:break-all;'><b>MASTER HASH (PROTOCOL PROOF):</b><br><b>{m_hash}</b></p>
-                    <p style='font-size:10px; word-break:break-all; color:#666;'><b>VAULT REFERENCE (SALT HASH):</b><br>{curr_sh}</p>
-                    <hr style='border:1px dashed #000;'>
-                    <p style='text-align:center; font-size:22px; font-weight:bold; letter-spacing:2px;'>{res_str}</p>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"""<div class='certificate'><div class='verified-seal'>VTL VERIFIED</div><h3 style='margin-top:0; font-size:16px;'>VTL AUDIT CERTIFICATE</h3><p style='font-size:12px;'><b>ENTITY:</b> {c_name}<br><b>REF-ID:</b> {p_id}<br><b>DATE:</b> {today_str}</p><hr style='border:1px solid #eee;'><p style='font-size:10px; word-break:break-all;'><b>MASTER HASH (PROTOCOL PROOF):</b><br><b>{m_hash}</b></p><p style='font-size:10px; word-break:break-all; color:#666;'><b>VAULT REFERENCE (SALT HASH):</b><br>{curr_sh}</p><hr style='border:1px dashed #000;'><p style='text-align:center; font-size:22px; font-weight:bold; letter-spacing:2px;'>{res_str}</p></div>""", unsafe_allow_html=True)
                 st.download_button("📥 Zertifikat herunterladen", f"Master Hash: {m_hash}\nSalt Hash: {curr_sh}\nValues: {res_str}", f"VTL_Cert_{p_id}.txt")
         else: st.error("❌ Bitte versiegeln Sie zuerst einen Protocol-Salt im Vault!")
 
-# --- 6. PUBLIC VALIDATOR ---
 elif choice == "Public Validator":
     st.write("---")
     st.title("🔍 Public Validator")
@@ -191,13 +169,7 @@ elif choice == "Public Validator":
                 time.sleep(1.2)
                 st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
                 st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
-                st.markdown(f"""
-                **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
-                - **Entropy Source Sync:** Quellwerte (DE, AT, IT) verifiziert.
-                - **Date-Binding:** Gültigkeit für den Ziehungstag bestätigt.
-                - **Security Vault:** Salt-Integrität im Vault abgeglichen.
-                - **Proof of Fairness:** Protokoll ist lückenlos und manipulationssicher.
-                """)
+                st.markdown(f"**Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**\n- **Entropy Source Sync:** Quellwerte verifiziert.\n- **Date-Binding:** Gültigkeit bestätigt.\n- **Security Vault:** Salt-Integrität abgeglichen.\n- **Proof of Fairness:** Protokoll ist manipulationssicher.")
         else: st.warning("Bitte geben Sie einen Hash ein.")
 
 # --- 7. HISTORY ---
@@ -212,12 +184,4 @@ for idx, item in enumerate(st.session_state.history_data):
             st.session_state.selected_hist_idx = idx if st.session_state.selected_hist_idx != idx else None
             st.rerun()
     if st.session_state.selected_hist_idx == idx:
-        st.markdown(f"""
-        <div class='detail-box'>
-            <p><b>Quellwerte DE:</b> {item['DE']}</p>
-            <p><b>Quellwerte AT:</b> {item['AT']}</p>
-            <p><b>Quellwerte IT:</b> {item['IT']}</p>
-            <hr style='border:0.5px solid #444;'>
-            <p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"<div class='detail-box'><p><b>Quellwerte DE:</b> {item['DE']}</p><p><b>Quellwerte AT:</b> {item['AT']}</p><p><b>Quellwerte IT:</b> {item['IT']}</p><hr style='border:0.5px solid #444;'><p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p></div>", unsafe_allow_html=True)
