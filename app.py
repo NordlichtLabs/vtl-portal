@@ -25,6 +25,7 @@ st.markdown("""
     .stButton>button { width: 100%; background-color: #004a99; color: white; font-weight: bold; border-radius: 8px; border: none; height: 45px; }
     .stDownloadButton>button { background-color: #28a745 !important; color: white !important; }
     
+    /* Zertifikat-Styling */
     .certificate { 
         border: 2px solid #000; padding: 25px; border-radius: 10px; 
         background-color: #ffffff; color: #000000;
@@ -45,17 +46,15 @@ st.markdown("""
     .status-locked { color: #ff4b4b; font-weight: bold; }
     .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
     
-    /* Innovations-Box Styling */
-    .innovation-box {
-        background: linear-gradient(90deg, rgba(0,74,153,0.15) 0%, rgba(0,0,0,0) 100%);
-        padding: 25px; border-radius: 12px; border-left: 6px solid #004a99; margin-bottom: 30px;
+    /* Validator-Info ohne Box */
+    .validator-info {
+        border-left: 5px solid #004a99;
+        padding-left: 15px;
+        margin-bottom: 25px;
+        font-size: 14px;
+        line-height: 1.6;
     }
     
-    .validator-info {
-        background-color: rgba(0, 74, 153, 0.1);
-        border-left: 5px solid #004a99;
-        padding: 15px; margin-bottom: 25px; font-size: 14px; line-height: 1.6;
-    }
     .certificate h3, .certificate p, .certificate b { color: #000000 !important; }
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
     .hist-hash-text { font-size: 14px; font-family: sans-serif; }
@@ -74,11 +73,11 @@ if st.sidebar.button("🔄 System Reset"):
 # --- 4. HEADER ---
 st.title("🛡️ Verifiable Truth Layer (VTL)")
 
-# INNOVATIONS-FOKUS MESSAGE
+# CLEAN MARKETING MESSAGE (WEISSE SCHRIFT, KEINE BOX)
 st.markdown("""
-    <div class="innovation-box">
-        <h3 style="margin: 0; color: #90caf9; font-size: 22px;">Defining the New Standard for Provable Fairness.</h3>
-        <p style="font-size: 16px; line-height: 1.6; margin-top: 10px; color: #ffffff; max-width: 900px;">
+    <div style="margin-bottom: 40px; margin-top: 10px;">
+        <h2 style="color: #ffffff; margin-bottom: 15px;">„Don't Trust, Verify“</h2>
+        <p style="font-size: 20px; line-height: 1.6; color: #ffffff; max-width: 1000px;">
             In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
             VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
             dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
@@ -169,6 +168,7 @@ if choice == "VTL Generator":
 # --- 6. PUBLIC VALIDATOR ---
 elif choice == "Public Validator":
     st.title("🔍 Public Validator")
+    
     st.markdown("""
     <div class="validator-info">
         <b>Wahrheit durch Mathematik:</b> Der Public Validator ist die unabhängige Prüfinstanz für Endnutzer. 
