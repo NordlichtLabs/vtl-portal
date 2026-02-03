@@ -46,12 +46,13 @@ st.markdown("""
     .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
     .required-star { color: #ff4b4b; font-weight: bold; }
     
-    .validator-info {
-        border-left: 5px solid #004a99;
-        padding-left: 15px;
-        margin-bottom: 25px;
-        font-size: 14px;
+    .validator-info-text {
+        font-size: 20px; 
         line-height: 1.6;
+        border-left: 5px solid #004a99;
+        padding-left: 20px;
+        margin-bottom: 30px;
+        color: #ffffff;
     }
     
     .certificate h3, .certificate p, .certificate b { color: #000000 !important; }
@@ -69,45 +70,45 @@ if st.sidebar.button("🔄 System Reset"):
     st.session_state.selected_hist_idx = None
     st.rerun()
 
-# --- 4. HEADER ---
+# --- 4. HEADER & CONTENT-STEUERUNG ---
 st.title("🛡️ Verifiable Truth Layer (VTL)")
 
-st.markdown("""
-    <div style="margin-bottom: 20px; margin-top: 10px;">
-        <h2 style="color: #ffffff; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
-        <p style="font-size: 20px; line-height: 1.6; color: #ffffff; max-width: 1000px;">
-            In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
-            VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
-            dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.write("---")
-
-st.subheader("How it works")
-hiw_col1, hiw_col2, hiw_col3 = st.columns(3)
-with hiw_col1:
-    st.markdown("### Entropie fixieren")
-    st.write("Das System nutzt unvorhersehbare Echtzeit-Daten (wie Lottozahlen) als Basis. Da diese Werte erst in der Zukunft feststehen, kann niemand das Ergebnis manipulieren.")
-with hiw_col2:
-    st.markdown("### Vault-Versiegelung")
-    st.write("Durch den individuellen Protocol-Salt wird die Berechnung 'gesalzen'. Dies verhindert, dass Dritte Ergebnisse vorab berechnen oder Muster erkennen.")
-with hiw_col3:
-    st.markdown("### Mathematischer Beweis")
-    st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder Bürger jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
-
-st.write("---")
-
-# --- 5. VTL GENERATOR ---
+# Zeige Marketing & How it Works NUR im Generator
 if choice == "VTL Generator":
+    st.markdown("""
+        <div style="margin-bottom: 20px; margin-top: 10px;">
+            <h2 style="color: #ffffff; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
+            <p style="font-size: 20px; line-height: 1.6; color: #ffffff; max-width: 1000px;">
+                In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
+                VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
+                dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.write("---")
+
+    st.subheader("How it works")
+    hiw_col1, hiw_col2, hiw_col3 = st.columns(3)
+    with hiw_col1:
+        st.markdown("### 1. Entropie fixieren")
+        st.write("Das System nutzt unvorhersehbare Echtzeit-Daten (wie Lottozahlen) als Basis. Da diese Werte erst in der Zukunft feststehen, kann niemand das Ergebnis manipulieren.")
+    with hiw_col2:
+        st.markdown("### 2. Vault-Versiegelung")
+        st.write("Durch den individuellen Protocol-Salt wird die Berechnung 'gesalzen'. Dies verhindert, dass Dritte Ergebnisse vorab berechnen oder Muster erkennen.")
+    with hiw_col3:
+        st.markdown("### 3. Mathematischer Beweis")
+        st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder Bürger jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
+
+    st.write("---")
+
+    # --- 5. VTL GENERATOR ---
     col1, col2 = st.columns([1, 1])
     with col1:
         st.header("🔐 Security Vault")
         c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
         
-        # Salt-Label mit Asterisk
         st.markdown('Protocol-Salt <span class="required-star">*</span>', unsafe_allow_html=True)
         raw_salt = st.text_input("Protocol-Salt-Input", placeholder="Geben Sie den Salt zur Versiegelung ein...", label_visibility="collapsed")
         
@@ -183,9 +184,11 @@ if choice == "VTL Generator":
 
 # --- 6. PUBLIC VALIDATOR ---
 elif choice == "Public Validator":
+    st.write("---")
     st.title("🔍 Public Validator")
+    
     st.markdown("""
-    <div class="validator-info">
+    <div class="validator-info-text">
         <b>Wahrheit durch Mathematik:</b> Der Public Validator ist die unabhängige Prüfinstanz für Endnutzer. 
         Durch Eingabe des Protokoll-Hashes gleicht das System die kryptografische Kette live mit den staatlich 
         versiegelten Entropie-Quellen (Lotto-Daten) und dem institutionellen Security-Salt ab. 
