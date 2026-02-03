@@ -196,7 +196,7 @@ st.write("---")
 # --- 8. VALIDATOR ---
 st.header("🔍 Public Validator")
 st.markdown("""<div style="font-size:24px; font-weight:bold; color:#00d4ff; margin-bottom:10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div><div style="font-size:18px; color:#ffffff; line-height:1.5; max-width:1000px; margin-bottom:20px;">Sobald Sie ihren den Master-Hash aus dem VTL Audit Certificate eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, wird die Integrität bestätigt.</div>""", unsafe_allow_html=True)
-v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
+v_hash = st.text_input("Master-Hash aus dem VTL Audit Certificate zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
 if st.button("Integrität prüfen"):
     if v_hash:
         with st.spinner('Validierung...'):
