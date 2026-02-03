@@ -97,7 +97,7 @@ st.subheader("Der VTL-Prozess")
 hiw1, hiw2, hiw3, hiw4 = st.columns(4)
 steps = [("1.", "Versiegelung", "Der Protocol-Salt wird im VTL Vault zeitgestempelt versiegelt."),
          ("2.", "Fixierung", "Lotto-Daten werden als Entropy-Hash unveränderbar registriert."),
-         ("3.", "Kopplung", "Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
+         ("3.", "Kopplung", "Protocol-Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
          ("4.", "Output", "Aus dem Master-Hash entstehen beweisbare Zahlen.")]
 for i, step in enumerate(steps):
     with [hiw1, hiw2, hiw3, hiw4][i]:
@@ -111,19 +111,19 @@ with col_v:
     st.header("🔐 Security Vault")
     p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
     st.markdown('Protocol-Salt <span style="color:#ff4b4b; font-weight:bold;">*</span>', unsafe_allow_html=True)
-    raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt ein...", label_visibility="collapsed")
+    raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Protocol-Salt ein...", label_visibility="collapsed")
     
     with st.expander("💡 Was ist der Protocol-Salt? (Beispiel)"):
         st.markdown("""
             Der **Protocol-Salt** ist Ihr persönlicher „Fingerabdruck“ im System. Er garantiert, dass Ergebnisse individuell berechnet werden und vorab nicht manipuliert werden können.
             
             **Das Tresor-Prinzip:**
-            1. **Versiegelung:** Bevor die Lottozahlen (die externe Entropie) gezogen werden, legen Sie Ihren geheimen Salt (z. B. das Wort `Sicherheit2026`) in unseren digitalen Tresor.
-            2. **Zeitstempel:** Das System quittiert: „Der Salt wurde um 14:00 Uhr versiegelt.“
+            1. **Versiegelung:** Bevor die Lottozahlen (die externe Entropie) gezogen werden, legen Sie Ihren geheimen Protocol-Salt (z. B. das Wort `Sicherheit2026`) in unseren digitalen Tresor.
+            2. **Zeitstempel:** Das System quittiert: „Der Protocol-Salt wurde um 14:00 Uhr versiegelt.“
             3. **Die Ziehung:** Um 20:00 Uhr werden die offiziellen Lottozahlen gezogen (z. B. `7, 14, 23...`).
             4. **Die Kopplung:** VTL berechnet nun: `[7, 14, 23] + [Sicherheit2026] = Ihr Ergebnis`.
             
-            **Beweis:** Da Ihr Salt bereits feststand, als die Zahlen noch unbekannt waren, ist eine nachträgliche Manipulation mathematisch ausgeschlossen.
+            **Beweis:** Da Ihr Protocol-Salt bereits feststand, als die Zahlen noch unbekannt waren, ist eine nachträgliche Manipulation mathematisch ausgeschlossen.
         """)
     
     btn_c, tim_c = st.columns([2, 1])
@@ -134,7 +134,7 @@ with col_v:
             else:
                 now = datetime.now().strftime("%H:%M:%S")
                 s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
-                st.session_state.registered_salts.append({"Hash": s_hash, "Salt": raw_salt, "Zeit": now})
+                st.session_state.registered_salts.append({"Hash": s_hash, "Protocol-Salt": raw_salt, "Zeit": now})
                 st.rerun()
     with tim_c:
         if st.session_state.registered_salts:
