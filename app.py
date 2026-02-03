@@ -192,7 +192,7 @@ if st.session_state.current_cert:
     with rr:
         st.markdown(f"""<div class='certificate'><div class='cert-logo'>🛡️</div><div style='position:absolute; bottom:20px; right:20px; border:3px double #28a745; color:#28a745; padding:5px 10px; font-weight:bold; transform:rotate(-15deg); border-radius:5px;'>VTL VERIFIED</div><div class='cert-title'>VTL AUDIT CERTIFICATE</div><div class='cert-label'>Reference-ID & Date</div><div class='cert-value'>{c['p_id']} | {c['date']}</div><div class='cert-label'>Entropy Sources (DE/AT/IT)</div><div class='cert-value'>{c['entropy_all']}</div><div class='cert-label'>Protocol-Salt (Sealed)</div><div class='cert-value'>{c['salt']} (Versiegelt um {c['salt_time']})</div><div class='cert-label'>Kryptografischer Master-Hash</div><div class='cert-value' style='font-size:12px; font-family: monospace;'>{c['m_hash']}</div><hr style='border: 1px solid #ddd;'><div class='cert-label' style='text-align:center;'>Final Verifiable Results</div><p style='text-align:center; font-size:32px; font-weight:bold; margin-top:10px; color:#000;'>{c['results_str']}</p></div>""", unsafe_allow_html=True)
         
-        st.download_button(label="📄 Download Certificate (.txt)", data=f"VTL AUDIT REPORT\nID: {c['p_id']}\nHASH: {c['m_hash']}\nRESULTS: {c['results_str']}", file_name=f"VTL_Cert_{c['p_id']}.txt")
+        st.download_button(label="📄 Download Certificate (.pdf)", data=f"VTL AUDIT REPORT\nID: {c['p_id']}\nHASH: {c['m_hash']}\nRESULTS: {c['results_str']}", file_name=f"VTL_Cert_{c['p_id']}.txt")
 
 st.write("---")
 
