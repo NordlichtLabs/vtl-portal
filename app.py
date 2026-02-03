@@ -162,7 +162,7 @@ if st.button("Zahlen & Zertifikat berechnen"):
             st.table(pd.DataFrame({"Wert": results}, index=range(1, count+1)))
         with rr:
             st.markdown(f"""<div class='certificate'><div style='position:absolute; bottom:20px; right:20px; border:3px double #28a745; color:#28a745; padding:5px 10px; font-weight:bold; transform:rotate(-15deg); border-radius:5px;'>VTL VERIFIED</div><h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3><p style='font-size:12px;'><b>REF:</b> {p_id} | <b>DATE:</b> {today}</p><hr><p style='font-size:10px; word-break:break-all;'><b>MASTER HASH:</b><br>{m_hash}</p><hr><p style='text-align:center; font-size:20px; font-weight:bold;'>{", ".join(map(str, results))}</p></div>""", unsafe_allow_html=True)
-    else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
+    else: st.error("Bitte geben sie zuerst den Protocol-Salt ein!")
 
 st.write("---")
 
