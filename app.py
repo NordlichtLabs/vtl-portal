@@ -43,6 +43,7 @@ st.markdown("""
     
     .vault-info { background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .status-locked { color: #ff4b4b; font-weight: bold; }
+    .required-star { color: #ff4b4b; font-weight: bold; }
     
     .timer-container { border: 1px solid #ff4b4b; background-color: rgba(255, 75, 75, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff4b4b; }
     .timer-label { font-size: 9px; font-weight: bold; margin-bottom: -4px; letter-spacing: 0.5px; }
@@ -98,7 +99,8 @@ with col1:
     st.header("🔐 Security Vault")
     c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
     p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
-    st.markdown('Protocol-Salt *', unsafe_allow_html=True)
+    # HIER: Roter Asterisk hinzugefügt
+    st.markdown('Protocol-Salt <span class="required-star">*</span>', unsafe_allow_html=True)
     raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt zur Versiegelung ein...", label_visibility="collapsed")
     
     btn_col, timer_col = st.columns([2, 1])
@@ -138,9 +140,9 @@ with col1:
             """, unsafe_allow_html=True)
 
     if st.session_state.registered_salts:
-        # Hier ist dein neuer Erklärungstext eingebaut
+        # HIER: Schriftgröße um 1 erhöht (von 13px auf 15px)
         st.markdown("""
-            <div style="font-size: 13px; color: #ffffff; margin-top: 15px; margin-bottom: 10px; line-height: 1.4;">
+            <div style="font-size: 15px; color: #ffffff; margin-top: 15px; margin-bottom: 10px; line-height: 1.4;">
                 <b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr individueller Protokoll-Key muss vor der offiziellen Ziehung versiegelt sein. 
                 Der Cut-Off stellt sicher, dass nachträgliche Manipulationen am Ergebnis ausgeschlossen sind. <i>Don't Trust, Verify.</i>
             </div>
