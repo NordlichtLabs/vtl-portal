@@ -19,13 +19,11 @@ st.set_page_config(page_title="VTL - Verifiable Truth Layer", layout="wide")
 st.markdown("""
     <style>
     [data-testid="stSidebar"] { display: none; }
-    
     .stApp { 
         background-color: #0a0a0a; 
         color: #ffffff;
         background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #0a0a0a 100%);
     }
-    
     h1, h2, h3 { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
     h1 { color: #00d4ff !important; text-shadow: 0 0 10px #00d4ff; }
     
@@ -36,30 +34,20 @@ st.markdown("""
     }
     .stButton>button:hover { box-shadow: 0 0 20px #00d4ff; transform: translateY(-2px); }
 
-    /* Header Buttons Weiss */
     .login-btn { border: 1px solid #ffffff; color: #ffffff !important; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; }
     .signup-btn { background-color: #ffffff; color: #000 !important; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; }
-
-    .problem-description { color: #ffffff !important; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 20px; }
 
     .use-case-box { padding: 25px; border-radius: 10px; background: rgba(255, 255, 255, 0.03); height: 100%; border-top: 4px solid; }
     .web2-box { border-color: #00d4ff; }
     .web3-box { border-color: #ff00ff; }
-    
     .use-case-list { list-style-type: none; padding-left: 0; font-size: 17px; line-height: 1.8; }
     .web2-text { color: #00d4ff; font-weight: bold; font-size: 22px; }
     .web3-text { color: #ff00ff; font-weight: bold; font-size: 22px; }
 
     .hiw-card { background-color: rgba(0, 74, 153, 0.15); padding: 25px; border-radius: 12px; height: 100%; border: 1px solid #004a99; }
-    .hiw-number { color: #00d4ff; font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-
     .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', monospace; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.3); }
     .timer-container { border: 1px solid #ff00ff; background-color: rgba(255, 0, 255, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff00ff; }
     .vault-info { background-color: #000; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 10px; font-family: monospace; font-size: 12px; }
-    
-    [data-testid="stTable"] { max-width: 250px; margin-left: auto; margin-right: auto; }
-    [data-testid="stTable"] td, [data-testid="stTable"] th { text-align: center !important; }
-    
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
     </style>
     """, unsafe_allow_html=True)
@@ -74,7 +62,7 @@ with head_col2:
 # --- 4. INTRO ---
 st.markdown("""
     <div style="margin-top: 20px;">
-        <div class="problem-description">
+        <div style="color: #ffffff; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 20px;">
             Das Problem herkömmlicher Zufallsgeneratoren: Ein digitales Blindvertrauen. Die meisten heutigen Systeme zur Zufallszahlengenerierung sind eine <b>Blackbox</b>. 
             Ob bei Gewinnspielen, Audits oder Zuteilungen – das Ergebnis wird hinter verschlossenen Türen berechnet. Für den Nutzer ist nicht nachvollziehbar, 
             ob das Resultat wirklich dem Zufall entspringt oder im Nachhinein manipuliert wurde. Ohne beweisbare Integrität bleibt jede digitale Entscheidung 
@@ -90,44 +78,30 @@ st.markdown("""
 # USE CASES
 uc_col1, uc_col2 = st.columns(2)
 with uc_col1:
-    st.markdown("""
-        <div class="use-case-box web2-box">
-            <div class="web2-text">Use Cases: Web2</div>
-            <ul class="use-case-list">
-                <li>🎲 <b>Verlosungen:</b> Beweisbare Fairness für Marketing-Kampagnen.</li>
-                <li>🧬 <b>Medizinische Studien:</b> Manipulationssichere Randomisierung.</li>
-                <li>🏦 <b>Banken-Audits:</b> Unbestreitbare Compliance-Stichproben.</li>
-                <li>🎟️ <b>Ticketing:</b> Gerechte Vergabe ohne Bot-Bevorzugung.</li>
-            </ul>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div class="use-case-box web2-box"><div class="web2-text">Use Cases: Web2</div><ul class="use-case-list">
+        <li>🎲 <b>Verlosungen:</b> Beweisbare Fairness für Marketing-Kampagnen.</li>
+        <li>🧬 <b>Medizinische Studien:</b> Manipulationssichere Randomisierung.</li>
+        <li>🏦 <b>Banken-Audits:</b> Unbestreitbare Compliance-Stichproben.</li>
+        <li>🎟️ <b>Ticketing:</b> Gerechte Vergabe ohne Bot-Bevorzugung.</li></ul></div>""", unsafe_allow_html=True)
 with uc_col2:
-    st.markdown("""
-        <div class="use-case-box web3-box">
-            <div class="web3-text">Use Cases: Web3</div>
-            <ul class="use-case-list">
-                <li>🖼️ <b>NFT-Minting:</b> Zufällige Trait-Zuweisung On-Chain.</li>
-                <li>⚔️ <b>Gaming:</b> Provably Fair Lootboxes & Zufallswerte.</li>
-                <li>🗳️ <b>DAO-Governance:</b> Auswahl von Validatoren & Gremien.</li>
-                <li>🔗 <b>Oracle-Entropie:</b> Sicherer Zufall für Smart Contracts.</li>
-            </ul>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("""<div class="use-case-box web3-box"><div class="web3-text">Use Cases: Web3</div><ul class="use-case-list">
+        <li>🖼️ <b>NFT-Minting:</b> Zufällige Trait-Zuweisung On-Chain.</li>
+        <li>⚔️ <b>Gaming:</b> Provably Fair Lootboxes & Zufallswerte.</li>
+        <li>🗳️ <b>DAO-Governance:</b> Auswahl von Validatoren & Gremien.</li>
+        <li>🔗 <b>Oracle-Entropie:</b> Sicherer Zufall für Smart Contracts.</li></ul></div>""", unsafe_allow_html=True)
 
 st.write("---")
 
 # --- 5. PROCESS ---
 st.subheader("Der VTL-Prozess")
 hiw_col1, hiw_col2, hiw_col3, hiw_col4 = st.columns(4)
-steps = [
-    ("1.", "Versiegelung", "Der Protocol-Salt wird im VTL Vault zeitgestempelt versiegelt."),
-    ("2.", "Fixierung", "Lotto-Daten werden als Entropy-Hash unveränderbar registriert."),
-    ("3.", "Kopplung", "Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
-    ("4.", "Output", "Aus dem Master-Hash entstehen beweisbare Zahlen.")
-]
+steps = [("1.", "Versiegelung", "Der Protocol-Salt wird im VTL Vault zeitgestempelt versiegelt."),
+         ("2.", "Fixierung", "Lotto-Daten werden als Entropy-Hash unveränderbar registriert."),
+         ("3.", "Kopplung", "Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
+         ("4.", "Output", "Aus dem Master-Hash entstehen beweisbare Zahlen.")]
 for i, step in enumerate(steps):
     with [hiw_col1, hiw_col2, hiw_col3, hiw_col4][i]:
-        st.markdown(f'<div class="hiw-card"><div class="hiw-number">{step[0]}</div><b>{step[1]}</b><br><br>{step[2]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="hiw-card"><div style="color:#00d4ff; font-size:28px; font-weight:bold;">{step[0]}</div><b>{step[1]}</b><br><br>{step[2]}</div>', unsafe_allow_html=True)
 
 st.write("---")
 
@@ -143,7 +117,9 @@ with col_v:
     btn_c, tim_c = st.columns([2, 1])
     with btn_c:
         if st.button("Salt im Vault registrieren"):
-            if raw_salt.strip():
+            if not raw_salt.strip():
+                st.error("Bitte geben sie zuerst den Protocol-Salt ein!")
+            else:
                 s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
                 st.session_state.registered_salts.append({"Hash": s_hash, "Salt": raw_salt, "Zeit": datetime.now().strftime("%H:%M:%S")})
                 st.rerun()
@@ -153,7 +129,7 @@ with col_v:
             st.markdown("""<script>(function(){var d=new Date(Date.parse(new Date())+600000);function u(){var t=Date.parse(d)-Date.parse(new Date());var s=Math.floor((t/1000)%60);var m=Math.floor((t/1000/60)%60);var e=document.getElementById('c-clock');if(e){e.innerHTML=m+":"+('0'+s).slice(-2);if(t<=0)clearInterval(i);}}u();var i=setInterval(u,1000);})();</script>""", unsafe_allow_html=True)
 
     if st.session_state.registered_salts:
-        st.markdown("""<div style="font-size: 15px; margin-top:15px; line-height:1.4;"><b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen. <i>Don't Trust, Verify.</i></div>""", unsafe_allow_html=True)
+        st.markdown("""<div style="font-size: 15px; margin-top:15px; line-height:1.4;"><b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen.</div>""", unsafe_allow_html=True)
         ls = st.session_state.registered_salts[-1]
         st.markdown(f'<div class="vault-info"><b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br><b>Vault-Hash:</b> {ls["Hash"][:32]}...</div>', unsafe_allow_html=True)
 
@@ -181,80 +157,45 @@ if st.button("Zahlen & Zertifikat berechnen"):
         m_seed = f"{e_hash}-{curr['Salt']}"
         m_hash = hashlib.sha256(m_seed.encode()).hexdigest()
         results = [(int(hashlib.sha256(f"{m_hash}-{i}".encode()).hexdigest(), 16) % (max_v - min_v + 1)) + min_v for i in range(1, count + 1)]
-        
         rl, rr = st.columns(2)
         with rl:
             st.table(pd.DataFrame({"Wert": results}, index=range(1, count+1)))
         with rr:
-            st.markdown(f"""<div class='certificate'><div class='verified-seal'>VTL VERIFIED</div><h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3><p style='font-size:12px;'><b>REF:</b> {p_id} | <b>DATE:</b> {today}</p><hr><p style='font-size:10px; word-break:break-all;'><b>MASTER HASH:</b><br>{m_hash}</p><hr><p style='text-align:center; font-size:20px; font-weight:bold;'>{", ".join(map(str, results))}</p></div>""", unsafe_allow_html=True)
-    else: st.error("Bitte geben sie zuerst den Protocol-Salt ein!")
+            st.markdown(f"""<div class='certificate'><div style='position:absolute; bottom:20px; right:20px; border:3px double #28a745; color:#28a745; padding:5px 10px; font-weight:bold; transform:rotate(-15deg); border-radius:5px;'>VTL VERIFIED</div><h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3><p style='font-size:12px;'><b>REF:</b> {p_id} | <b>DATE:</b> {today}</p><hr><p style='font-size:10px; word-break:break-all;'><b>MASTER HASH:</b><br>{m_hash}</p><hr><p style='text-align:center; font-size:20px; font-weight:bold;'>{", ".join(map(str, results))}</p></div>""", unsafe_allow_html=True)
+    else: st.error("Bitte versiegeln Sie zuerst einen Salt!")
 
 st.write("---")
 
 # --- 8. VALIDATOR ---
 st.header("🔍 Public Validator")
-st.markdown("""
-    <div style="margin-bottom: 30px;">
-        <div style="font-size: 24px; font-weight: bold; color: #00d4ff; margin-bottom: 10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>
-        <div style="font-size: 18px; color: #ffffff; line-height: 1.5; max-width: 1000px;">
-            Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
-            Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
-            offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, 
-            wird die Integrität bestätigt – so wird aus blindem Vertrauen beweisbare Sicherheit.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
+st.markdown("""<div style="font-size:24px; font-weight:bold; color:#00d4ff; margin-bottom:10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>
+    <div style="font-size:18px; color:#ffffff; line-height:1.5; max-width:1000px; margin-bottom:20px;">
+    Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
+    Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
+    offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, 
+    wird die Integrität bestätigt – so wird aus blindem Vertrauen beweisbare Sicherheit.</div>""", unsafe_allow_html=True)
+v_hash = st.text_input("Master-Hash zur Verifizierung eingeben")
 if st.button("Integrität prüfen"):
     if v_hash:
         with st.spinner('Validierung...'):
             time.sleep(1.2)
             st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
             st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
-            st.markdown(f"""
-            **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
-            - **Entropy Source Sync:** Quellwerte (DE, AT, IT) verifiziert.
-            - **Date-Binding:** Gültigkeit für den Ziehungstag bestätigt.
-            - **Security Vault:** Salt-Integrität im Vault abgeglichen.
-            - **Proof of Fairness:** Protokoll ist lückenlos und manipulationssicher.
-            """)
+            st.markdown(f"**Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**<br>• Entropy Source Sync verifiziert.<br>• Date-Binding bestätigt.<br>• Security Vault abgeglichen.<br>• Proof of Fairness: OK.", unsafe_allow_html=True)
 
 st.write("---")
 
 # --- 9. HISTORY ---
 st.header("📜 Protokoll-Historie")
 for idx, h in enumerate(st.session_state.history_data):
-    # Container für die Historie-Einträge
     with st.container():
         col_date, col_vals, col_btn = st.columns([2, 5, 2])
-        
-        with col_date:
-            st.markdown(f"<div style='padding-top: 10px;'><b>📅 {h['Datum']}</b></div>", unsafe_allow_html=True)
-            
-        with col_vals:
-            # Zahlen untereinander gelistet
-            st.markdown(f"""
-                <div style='font-size: 14px; line-height: 1.6; border-left: 2px solid #00d4ff; padding-left: 15px;'>
-                    <span style='color: #00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br>
-                    <span style='color: #00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br>
-                    <span style='color: #00d4ff;'>●</span> <b>IT:</b> {h['IT']}
-                </div>
-            """, unsafe_allow_html=True)
-            
+        with col_date: st.markdown(f"<div style='padding-top:10px;'><b>📅 {h['Datum']}</b></div>", unsafe_allow_html=True)
+        with col_vals: st.markdown(f"<div style='font-size:14px; line-height:1.6; border-left:2px solid #00d4ff; padding-left:15px;'><span style='color:#00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br><span style='color:#00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br><span style='color:#00d4ff;'>●</span> <b>IT:</b> {h['IT']}</div>", unsafe_allow_html=True)
         with col_btn:
             if st.button("Hash anzeigen", key=f"hist_btn_{idx}"):
                 st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
                 st.rerun()
-        
-        # Aufklappbarer Hash-Bereich
         if st.session_state.get(f"open_{idx}", False):
-            st.markdown(f"""
-                <div class='detail-box' style='margin-bottom: 20px;'>
-                    <p style='font-family: monospace; font-size: 12px; color: #aaa; margin: 0;'>
-                        <b>VERIFICATION HASH:</b><br>{h['Hash']}
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("<hr style='border: 0.5px solid #222; margin: 10px 0;'>", unsafe_allow_html=True)
+            st.markdown(f"<div class='detail-box'><p style='font-family:monospace; font-size:12px; color:#aaa; margin:0;'><b>VERIFICATION HASH:</b><br>{h['Hash']}</p></div>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:0.5px solid #222; margin:10px 0;'>", unsafe_allow_html=True)
