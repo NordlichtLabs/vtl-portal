@@ -172,7 +172,7 @@ if st.button("Zahlen & Zertifikat berechnen"):
         results = [(int(hashlib.sha256(f"{m_hash}-{i}".encode()).hexdigest(), 16) % (max_v - min_v + 1)) + min_v for i in range(1, count + 1)]
         
         st.session_state.current_cert = {
-            "flow": f"<div class='process-flow'><span style='color:#00d4ff'>Entropy-Hash</span> ({e_hash[:8]}...) <b>+</b> <span style='color:#ff00ff'>Protocol-Salt</span> ({curr['Salt']}) <b>=</b> <span style='font-weight:bold'>Master-Hash</span> ({m_hash[:12]}...)</div>",
+            "flow": f"<div class='process-flow'><span style='color:#00d4ff'>Entropy-Hash</span> ({e_hash[:8]}...) <b>+</b> <span style='color:#ff00ff'>Salt</span> ({curr['Salt']}) <b>=</b> <span style='font-weight:bold'>Master-Hash</span> ({m_hash[:12]}...)</div>",
             "results_str": ", ".join(map(str, results)),
             "m_hash": m_hash,
             "table": pd.DataFrame({"Wert": results}, index=range(1, count+1)),
