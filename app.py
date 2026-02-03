@@ -6,7 +6,7 @@ import time
 
 # --- 1. INITIALISIERUNG ---
 if 'selected_hist_idx' not in st.session_state:
-    st.session_state.selected_hist_idx = None
+    st.session_state.session_state.selected_hist_idx = None
 if 'registered_salts' not in st.session_state:
     st.session_state.registered_salts = []
 if 'history_data' not in st.session_state:
@@ -75,15 +75,13 @@ st.write("---")
 if choice == "VTL Generator":
     col1, col2 = st.columns([1, 1])
     with col1:
-        st.header("🔐 Security Vault")
+        st.header("1. 🔐 Security Vault")
         c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
         raw_salt = st.text_input("Protocol-Salt", placeholder="Geben Sie den Salt zur Versiegelung ein...")
         
-        # AKTUALISIERTER SALT HINWEIS
         st.markdown('<p class="info-hint">Der Salt ist ein einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt und Manipulationen durch Vorabberechnung ausschließt.</p>', unsafe_allow_html=True)
         
-        # UMGERANNTER BUTTON
         if st.button("Salt im VTL Vault registrieren"):
             if raw_salt.strip():
                 salt_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
@@ -98,7 +96,7 @@ if choice == "VTL Generator":
             st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br>Zeitstempel: {last_s['Zeit']}<br>SHA-256 Hash: {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
     
     with col2:
-        st.header("🎰 Entropy Source")
+        st.header("2. 🎰 Entropy Source")
         today_str = datetime.now().strftime("%d.%m.%Y")
         def entropy_row(label, val, key):
             c_l, c_d = st.columns([1, 1])
@@ -115,13 +113,13 @@ if choice == "VTL Generator":
         p_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
     st.write("---")
-    st.header("🧮 Deterministische Generierung")
+    st.header("3. 🧮 Zufallszahlen generieren")
     r_c1, r_c2, r_c3 = st.columns(3)
     with r_c1: count = st.number_input("Anzahl der Werte", min_value=1, value=5)
     with r_c2: min_v = st.number_input("Untergrenze", value=1)
     with r_c3: max_v = st.number_input("Obergrenze", value=100)
     
-    if st.button("Berechnen & Zertifikat erstellen"):
+    if st.button("Zahlen berechnen & Zertifikat erstellen"):
         if st.session_state.registered_salts:
             current_salt = st.session_state.registered_salts[-1]["Salt"]
             results = []
@@ -171,7 +169,6 @@ elif choice == "Public Validator":
             with st.spinner('Rekonstruktion der kryptografischen Kette...'):
                 time.sleep(1.2)
                 st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
-                # LUFTBALLONS WURDEN ENTFERNT
                 st.info("Dieses Zertifikat entspricht exakt den hinterlegten Entropie-Quellen.")
                 st.markdown(f"""
                 **Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**
