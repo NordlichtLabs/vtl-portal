@@ -69,7 +69,7 @@ st.markdown("""
             eine Vertrauensfrage, kein mathematischer Fakt.
         </div>
         <h2 style="color: #ffffff !important; margin-bottom: 10px;">„Don't Trust, Verify“</h2>
-        <div style="font-size: 25px; color: #ffffff; margin-bottom: 30px;">
+        <div style="font-size: 28px; color: #ffffff; margin-bottom: 30px;">
             VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, dass Ergebnisse nicht nur fair sind, sondern auch für immer beweisbar bleiben.
         </div>
     </div>
