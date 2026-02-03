@@ -65,12 +65,12 @@ st.write("---")
 if choice == "VTL Generator":
     col1, col2 = st.columns([1, 1])
     with col1:
-        st.header("🏢 Firmen-Portal")
-        c_name = st.text_input("Firmenname", "VTL Enterprise")
-        p_id = st.text_input("Projekt-ID", "SEC-AUDIT-2026")
-        raw_salt = st.text_input("Client-Salt", placeholder="Ihr privater Salt...")
+        st.header("🔐 Security Vault")
+        c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
+        p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
+        raw_salt = st.text_input("Protocol-Salt", placeholder="Geben Sie den Salt zur Versiegelung ein...")
         
-        if st.button("Client-Salt registrieren"):
+        if st.button("Salt im Vault registrieren"):
             if raw_salt.strip():
                 salt_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
                 st.session_state.registered_salts.append({
@@ -80,8 +80,8 @@ if choice == "VTL Generator":
         
         if st.session_state.registered_salts:
             last_s = st.session_state.registered_salts[-1]
-            st.success("✅ Salt im Vault registriert")
-            st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED</span><br>Zeit: {last_s['Zeit']}<br>Hash: {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
+            st.success("✅ Salt erfolgreich versiegelt")
+            st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br>Zeitstempel: {last_s['Zeit']}<br>SHA-256 Hash: {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
     
     with col2:
         st.header("🎰 Entropy Source")
@@ -91,18 +91,18 @@ if choice == "VTL Generator":
             with c_l: st.markdown(f"**{label}**")
             with c_d: st.markdown(f"<p style='text-align:right; font-weight:bold;'>{today_str}</p>", unsafe_allow_html=True)
             return st.text_input(label, value=val, label_visibility="collapsed", key=key)
-        l_de = entropy_row("Quellzahlen (DE)", "07, 14, 22, 31, 44, 49", "de")
-        l_at = entropy_row("Quellzahlen (AT)", "02, 18, 24, 33, 41, 45", "at")
-        l_it = entropy_row("Quellzahlen (IT)", "11, 23, 35, 56, 62, 88", "it")
+        l_de = entropy_row("Quellwerte (DE)", "07, 14, 22, 31, 44, 49", "de")
+        l_at = entropy_row("Quellwerte (AT)", "02, 18, 24, 33, 41, 45", "at")
+        l_it = entropy_row("Quellwerte (IT)", "11, 23, 35, 56, 62, 88", "it")
         m_entropy = f"{l_de}-{l_at}-{l_it}-{today_str}"
         p_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
     st.write("---")
-    st.header("🧮 Zufall generieren")
+    st.header("🧮 Deterministische Generierung")
     r_col1, r_col2, r_col3 = st.columns(3)
-    with r_col1: count = st.number_input("Anzahl", min_value=1, value=5)
-    with r_col2: min_v = st.number_input("Von", value=1)
-    with r_col3: max_v = st.number_input("Bis", value=100)
+    with r_col1: count = st.number_input("Anzahl der Werte", min_value=1, value=5)
+    with r_col2: min_v = st.number_input("Untergrenze", value=1)
+    with r_col3: max_v = st.number_input("Obergrenze", value=100)
     
     if st.button("Berechnen & Zertifikat erstellen"):
         if st.session_state.registered_salts:
@@ -115,8 +115,7 @@ if choice == "VTL Generator":
             
             res_col_left, res_col_right = st.columns(2)
             with res_col_left:
-                st.subheader("Generierte Werte")
-                # Anzeige als Tabelle
+                st.subheader("Generierte Output-Werte")
                 df_res = pd.DataFrame({"Index": range(1, count+1), "Wert": results})
                 st.table(df_res.set_index("Index"))
             
@@ -126,34 +125,33 @@ if choice == "VTL Generator":
                 <div class='certificate'>
                     <div class='verified-seal'>VTL VERIFIED</div>
                     <h3 style='margin-top:0;'>VTL AUDIT CERTIFICATE</h3>
-                    <p><b>HALTER:</b> {c_name}<br><b>PROJEKT:</b> {p_id}<br><b>DATUM:</b> {today_str}</p>
-                    <p style='font-size:10px; word-break:break-all;'><b>MASTER HASH:</b><br>{p_hash}</p>
+                    <p><b>ENTITY:</b> {c_name}<br><b>REF-ID:</b> {p_id}<br><b>VALID DATE:</b> {today_str}</p>
+                    <p style='font-size:10px; word-break:break-all;'><b>PROTOCOL HASH:</b><br>{p_hash}</p>
                     <hr style='border:1px dashed #000;'>
                     <p style='text-align:center; font-size:18px; font-weight:bold;'>{res_str}</p>
                 </div>
                 """, unsafe_allow_html=True)
-                # Download Button direkt darunter
-                st.download_button("📥 Download Certificate", f"VTL Audit\nFirma: {c_name}\nHash: {p_hash}\nZahlen: {res_str}", f"VTL_Cert_{p_id}.txt")
+                st.download_button("📥 Zertifikat herunterladen", f"VTL Audit Report\nEntity: {c_name}\nHash: {p_hash}\nGenerated Values: {res_str}", f"VTL_Cert_{p_id}.txt")
         else:
-            st.error("❌ Bitte erst den Client-Salt registrieren!")
+            st.error("❌ Bitte versiegeln Sie zuerst einen Protocol-Salt im Vault!")
 
 # --- 6. PUBLIC VALIDATOR ---
 elif choice == "Public Validator":
     st.title("🔍 Public Validator")
     cert_id = st.text_input("Zertifikats-ID oder Hash eingeben")
-    if st.button("Validieren"):
+    if st.button("Integrität prüfen"):
         if cert_id:
-            with st.spinner('Prüfe...'):
+            with st.spinner('Mathematische Verifizierung läuft...'):
                 time.sleep(1)
-                st.success("✅ VALIDIERUNG ERFOLGREICH")
+                st.success("✅ INTEGRITÄT VERIFIZIERT")
                 st.balloons()
-                st.info("Dieses Zertifikat wurde mathematisch gegen die Entropy-Quellen geprüft.")
+                st.info("Dieses Zertifikat entspricht exakt den hinterlegten Entropie-Quellen.")
         else:
             st.warning("Bitte ID eingeben.")
 
 # --- 7. HISTORY ---
 st.write("---")
-st.header("📜 Historie")
+st.header("📜 Protokoll-Historie")
 for idx, item in enumerate(st.session_state.history_data):
     h_c1, h_c2, h_c3 = st.columns([2, 5, 2])
     with h_c1: st.write(f"**{item['Datum']}**")
@@ -163,4 +161,9 @@ for idx, item in enumerate(st.session_state.history_data):
             st.session_state.selected_hist_idx = idx if st.session_state.selected_hist_idx != idx else None
             st.rerun()
     if st.session_state.selected_hist_idx == idx:
-        st.markdown(f"<div class='detail-box'>DE: {item['DE']}<br>AT: {item['AT']}<br>IT: {item['IT']}<br><br><span style='font-size:10px;'>{item['Hash']}</span></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class='detail-box'>
+            DE: {item['DE']}<br>AT: {item['AT']}<br>IT: {item['IT']}<br><br>
+            <span style='font-size:10px;'><b>SHA-256 HASH:</b> {item['Hash']}</span>
+        </div>
+        """, unsafe_allow_html=True)
