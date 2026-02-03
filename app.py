@@ -18,58 +18,60 @@ st.set_page_config(page_title="VTL - Verifiable Truth Layer", layout="wide")
 
 st.markdown("""
     <style>
-    /* Sidebar komplett ausblenden */
     [data-testid="stSidebar"] { display: none; }
-    [data-testid="stSidebarNav"] { display: none; }
-    
     .stApp { background-color: #2e2e2e; color: #ffffff; }
-    
-    /* Blau für Überschriften */
     h1, h2, h3 { color: #004a99 !important; }
     
-    /* Buttons */
     .stButton>button { width: 100%; background-color: #004a99; color: white; font-weight: bold; border-radius: 8px; border: none; height: 45px; }
     .stDownloadButton>button { background-color: #28a745 !important; color: white !important; }
     
-    /* Header & Login Area */
     .login-btn { background-color: transparent; border: 1px solid #ffffff; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-right: 10px; cursor: pointer; }
     .signup-btn { background-color: #ffffff; color: #2e2e2e; padding: 5px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; }
 
-    /* Text-Bereiche */
     .problem-description { color: #ffffff; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 20px; }
     .marketing-message { color: #ffffff; font-size: 20px; line-height: 1.6; max-width: 1000px; margin-bottom: 25px; }
 
-    /* How it works Cards */
     .hiw-card { background-color: #004a99; padding: 25px; border-radius: 12px; height: 100%; min-height: 220px; color: #ffffff; border: none; }
     .hiw-number { color: #ffffff; font-size: 28px; font-weight: bold; margin-bottom: 15px; opacity: 0.8; }
     .hiw-card b { font-size: 18px; color: #ffffff !important; }
 
-    /* Zertifikat & Vault */
     .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', Courier, monospace; position: relative; box-shadow: 10px 10px 20px rgba(0,0,0,0.5); }
     .verified-seal { position: absolute; bottom: 20px; right: 20px; border: 3px double #28a745; color: #28a745; padding: 5px 10px; font-weight: bold; transform: rotate(-15deg); border-radius: 5px; font-size: 14px; opacity: 0.8; }
     
-    /* Tabellen-Zentrierung */
     [data-testid="stTable"] { max-width: 250px; margin-left: auto; margin-right: auto; }
     [data-testid="stTable"] td, [data-testid="stTable"] th { text-align: center !important; }
     
     .vault-info { background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; font-family: monospace; font-size: 12px; }
     .status-locked { color: #ff4b4b; font-weight: bold; }
-    .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
-    .required-star { color: #ff4b4b; font-weight: bold; }
+    
+    /* Timer Style */
+    .expiry-timer-box { 
+        background-color: #1a1a1a; 
+        border: 1px solid #ff4b4b; 
+        border-radius: 8px; 
+        height: 45px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        color: #ff4b4b; 
+        font-weight: bold; 
+        font-family: monospace;
+        font-size: 18px;
+    }
     
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
     .hist-hash-text { font-size: 14px; font-family: sans-serif; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. TOP NAVIGATION / HEADER ---
+# --- 3. HEADER ---
 head_col1, head_col2 = st.columns([4, 1])
 with head_col1:
     st.title("🛡️ Verifiable Truth Layer (VTL)")
 with head_col2:
     st.markdown('<div style="text-align: right; padding-top: 15px;"><a class="login-btn">Login</a><a class="signup-btn">Sign-up</a></div>', unsafe_allow_html=True)
 
-# --- 4. INTRO & PROBLEM SECTION ---
+# --- 4. PROBLEM & MISSION ---
 st.markdown("""
     <div style="margin-top: 20px;">
         <div class="problem-description">
@@ -108,18 +110,42 @@ with col1:
     st.header("🔐 Security Vault")
     c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
     p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
-    st.markdown('Protocol-Salt <span class="required-star">*</span>', unsafe_allow_html=True)
+    st.markdown('Protocol-Salt *', unsafe_allow_html=True)
     raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt zur Versiegelung ein...", label_visibility="collapsed")
     
-    if st.button("Salt im VTL Vault registrieren"):
-        if raw_salt.strip():
+    # Button & Timer Reihe
+    btn_col, timer_col = st.columns([2, 1])
+    with btn_col:
+        register_click = st.button("Salt im VTL Vault registrieren")
+        if register_click and raw_salt.strip():
             s_hash = hashlib.sha256(raw_salt.encode()).hexdigest()
-            st.session_state.registered_salts.append({"ID": p_id, "Salt": raw_salt, "Hash": s_hash, "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")})
+            st.session_state.registered_salts.append({
+                "ID": p_id, "Salt": raw_salt, "Hash": s_hash, "Zeit": datetime.now().strftime("%H:%M:%S")
+            })
     
+    with timer_col:
+        if st.session_state.registered_salts:
+            st.markdown(f"""
+                <div class="expiry-timer-box">
+                    <span style="font-size: 10px; margin-right: 8px;">SALT EXPIRY:</span>
+                    <span id="expiry-timer">10:00</span>
+                </div>
+                <script>
+                    var duration = 600;
+                    var timerDisplay = document.getElementById('expiry-timer');
+                    var countdown = setInterval(function () {{
+                        var mins = parseInt(duration / 60, 10);
+                        var secs = parseInt(duration % 60, 10);
+                        secs = secs < 10 ? "0" + secs : secs;
+                        timerDisplay.textContent = mins + ":" + secs;
+                        if (--duration < 0) clearInterval(countdown);
+                    }}, 1000);
+                </script>
+            """, unsafe_allow_html=True)
+
     if st.session_state.registered_salts:
         last_s = st.session_state.registered_salts[-1]
-        st.success("✅ Salt erfolgreich versiegelt")
-        st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br><b>Zeitstempel:</b> {last_s['Zeit']}<br><b>Vault-Hash (Salt):</b> {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="vault-info"><b>Vault Status:</b> <span class="status-locked">LOCKED / SEALED</span><br><b>Zeitstempel:</b> {last_s['Zeit']}<br><b>Vault-Hash:</b> {last_s['Hash'][:32]}...</div>""", unsafe_allow_html=True)
 
 with col2:
     st.header("🎰 Entropy Source")
@@ -175,7 +201,7 @@ if st.button("Zahlen berechnen & Zertifikat erstellen"):
 
 st.write("---")
 
-# --- 7. PUBLIC VALIDATOR (JETZT INTEGRIERT) ---
+# --- 7. PUBLIC VALIDATOR ---
 st.header("🔍 Public Validator")
 st.markdown("""
     <div style="margin-bottom: 30px;">
@@ -199,7 +225,6 @@ if st.button("Integrität prüfen"):
             st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
             st.info("Dieser Master-Hash korrespondiert mit den Entropy-Quellen und dem Salt-Vault.")
             st.markdown(f"**Prüfprotokoll vom {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}:**\n- **Entropy Source Sync:** Quellwerte verifiziert.\n- **Date-Binding:** Gültigkeit bestätigt.\n- **Security Vault:** Salt-Integrität abgeglichen.\n- **Proof of Fairness:** Protokoll ist manipulationssicher.")
-    else: st.warning("Bitte geben Sie einen Hash ein.")
 
 st.write("---")
 
@@ -213,6 +238,5 @@ for idx, item in enumerate(st.session_state.history_data):
         if st.button("Details", key=f"btn_h_{idx}"):
             st.session_state[f"hist_open_{idx}"] = not st.session_state.get(f"hist_open_{idx}", False)
             st.rerun()
-    
     if st.session_state.get(f"hist_open_{idx}", False):
         st.markdown(f"<div class='detail-box'><p><b>Quellwerte DE:</b> {item['DE']}</p><p><b>Quellwerte AT:</b> {item['AT']}</p><p><b>Quellwerte IT:</b> {item['IT']}</p><hr style='border:0.5px solid #444;'><p class='hist-hash-text'><b>SHA-256 HASH:</b> {item['Hash']}</p></div>", unsafe_allow_html=True)
