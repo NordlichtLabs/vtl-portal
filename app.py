@@ -48,10 +48,7 @@ st.markdown("""
     .certificate { border: 2px solid #000; padding: 25px; border-radius: 10px; background-color: #ffffff; color: #000000; font-family: 'Courier New', monospace; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.3); }
     .timer-container { border: 1px solid #ff00ff; background-color: rgba(255, 0, 255, 0.05); border-radius: 8px; height: 45px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #ff00ff; }
     .vault-info { background-color: #000; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 10px; font-family: monospace; font-size: 12px; }
-    .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
-    
-    /* Expander Styling */
-    .stExpander { border: 1px solid #333 !important; background-color: rgba(255, 255, 255, 0.05) !important; border-radius: 8px !important; }
+    .detail-box { background-color: rgba(0, 212, 255, 0.05); padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #00d4ff; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -65,7 +62,7 @@ with head_col2:
 # --- 4. INTRO ---
 st.markdown("""
     <div style="margin-top: 20px;">
-        <div class="problem-description" style="color: #ffffff; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 20px;">
+        <div style="color: #ffffff; font-size: 18px; line-height: 1.5; max-width: 1000px; margin-bottom: 20px;">
             Das Problem herkömmlicher Zufallsgeneratoren: Ein digitales Blindvertrauen. Die meisten heutigen Systeme zur Zufallszahlengenerierung sind eine <b>Blackbox</b>. 
             Ob bei Gewinnspielen, Audits oder Zuteilungen – das Ergebnis wird hinter verschlossenen Türen berechnet. Für den Nutzer ist nicht nachvollziehbar, 
             ob das Resultat wirklich dem Zufall entspringt oder im Nachhinein manipuliert wurde. Ohne beweisbare Integrität bleibt jede digitale Entscheidung 
@@ -117,7 +114,6 @@ with col_v:
     st.markdown('Protocol-Salt <span style="color:#ff4b4b; font-weight:bold;">*</span>', unsafe_allow_html=True)
     raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt ein...", label_visibility="collapsed")
     
-    # NEU: Erklärungs-Box für Protocol-Salt
     with st.expander("💡 Was ist der Protocol-Salt? (Beispiel)"):
         st.markdown("""
             Der **Protocol-Salt** ist Ihr persönlicher „Fingerabdruck“ im System. Er garantiert, dass Ergebnisse individuell berechnet werden und vorab nicht manipuliert werden können.
@@ -126,8 +122,6 @@ with col_v:
             1. **Versiegelung:** Bevor die Lottozahlen (Entropie) gezogen werden, legen Sie einen Salt (z.B. `SafeCode123`) in unseren digitalen Tresor.
             2. **Zeitstempel:** Das System quittiert die Versiegelung, *bevor* die Ziehung stattfindet.
             3. **Die Kopplung:** Nach der Ziehung wird Ihr Salt mit den Lottozahlen verrechnet: `[Lottozahlen] + [SafeCode123] = Ihr Ergebnis`.
-            
-            **Beweis:** Da Ihr Salt bereits feststand, als die Zahlen noch unbekannt waren, ist eine nachträgliche Manipulation mathematisch ausgeschlossen.
         """)
     
     btn_c, tim_c = st.columns([2, 1])
@@ -145,7 +139,7 @@ with col_v:
             st.markdown("""<script>(function(){var d=new Date(Date.parse(new Date())+600000);function u(){var t=Date.parse(d)-Date.parse(new Date());var s=Math.floor((t/1000)%60);var m=Math.floor((t/1000/60)%60);var e=document.getElementById('c-clock');if(e){e.innerHTML=m+":"+('0'+s).slice(-2);if(t<=0)clearInterval(i);}}u();var i=setInterval(u,1000);})();</script>""", unsafe_allow_html=True)
 
     if st.session_state.registered_salts:
-        st.markdown("""<div style="font-size: 15px; margin-top:15px; line-height:1.4;"><b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen. <i>Don't Trust, Verify.</i></div>""", unsafe_allow_html=True)
+        st.markdown("""<div style="font-size: 15px; margin-top:15px; line-height:1.4;"><b>VTL Sealing Cut-off:</b> Sicherheits-Deadline. Ihr Key muss vor der Ziehung versiegelt sein. Manipulationen sind so ausgeschlossen.</div>""", unsafe_allow_html=True)
         ls = st.session_state.registered_salts[-1]
         st.markdown(f'<div class="vault-info"><b>Status:</b> <span style="color:#ff4b4b;">LOCKED / SEALED</span><br><b>Vault-Hash:</b> {ls["Hash"][:32]}...</div>', unsafe_allow_html=True)
 
@@ -186,10 +180,7 @@ st.write("---")
 st.header("🔍 Public Validator")
 st.markdown("""<div style="font-size:24px; font-weight:bold; color:#00d4ff; margin-bottom:10px;">Wahrheit durch Mathematik: Prüfen Sie hier die Integrität Ihrer Ergebnisse.</div>
     <div style="font-size:18px; color:#ffffff; line-height:1.5; max-width:1000px; margin-bottom:20px;">
-    Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette. 
-    Das System gleicht Ihre Daten live mit den versiegelten Protokollen im Security Vault und den 
-    offiziellen Entropie-Quellen ab. Nur wenn jede mathematische Variable exakt übereinstimmt, 
-    wird die Integrität bestätigt – so wird aus blindem Vertrauen beweisbare Sicherheit.</div>""", unsafe_allow_html=True)
+    Sobald Sie den Master-Hash eingeben, rekonstruiert der Validator die gesamte kryptografische Kette.</div>""", unsafe_allow_html=True)
 v_hash = st.text_input("Master-Hash zur Verifizierung eingeben", placeholder="f3b2c1a9e8...")
 if st.button("Integrität prüfen"):
     if v_hash:
@@ -205,13 +196,28 @@ st.write("---")
 st.header("📜 Protokoll-Historie")
 for idx, h in enumerate(st.session_state.history_data):
     with st.container():
-        col_date, col_vals, col_btn = st.columns([2, 5, 2])
-        with col_date: st.markdown(f"<div style='padding-top:10px;'><b>📅 {h['Datum']}</b></div>", unsafe_allow_html=True)
-        with col_vals: st.markdown(f"<div style='font-size:14px; line-height:1.6; border-left:2px solid #00d4ff; padding-left:15px;'><span style='color:#00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br><span style='color:#00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br><span style='color:#00d4ff;'>●</span> <b>IT:</b> {h['IT']}</div>", unsafe_allow_html=True)
+        # Nur Datum links, Button rechts
+        col_date, col_btn = st.columns([7, 2])
+        with col_date: 
+            st.markdown(f"<div style='padding-top:10px; font-size:18px;'><b>📅 {h['Datum']}</b></div>", unsafe_allow_html=True)
         with col_btn:
-            if st.button("Hash anzeigen", key=f"hist_btn_{idx}"):
+            if st.button("Details", key=f"hist_btn_{idx}"):
                 st.session_state[f"open_{idx}"] = not st.session_state.get(f"open_{idx}", False)
                 st.rerun()
+        
+        # Details klappen Quellwerte und Hash auf
         if st.session_state.get(f"open_{idx}", False):
-            st.markdown(f"<div class='detail-box'><p style='font-family:monospace; font-size:12px; color:#aaa; margin:0;'><b>VERIFICATION HASH:</b><br>{h['Hash']}</p></div>", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class='detail-box'>
+                    <div style='line-height: 1.8; margin-bottom:15px;'>
+                        <span style='color:#00d4ff;'>●</span> <b>DE:</b> {h['DE']}<br>
+                        <span style='color:#00d4ff;'>●</span> <b>AT:</b> {h['AT']}<br>
+                        <span style='color:#00d4ff;'>●</span> <b>IT:</b> {h['IT']}
+                    </div>
+                    <hr style='border: 0.5px solid #00d4ff; opacity: 0.3;'>
+                    <p style='font-family:monospace; font-size:12px; color:#aaa; margin:0;'>
+                        <b>VERIFICATION HASH:</b><br>{h['Hash']}
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
         st.markdown("<hr style='border:0.5px solid #222; margin:10px 0;'>", unsafe_allow_html=True)
