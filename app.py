@@ -96,7 +96,7 @@ with hiw_col2:
     st.write("Durch den individuellen Protocol-Salt wird die Berechnung 'gesalzen'. Dies verhindert, dass Dritte Ergebnisse vorab berechnen oder Muster erkennen.")
 with hiw_col3:
     st.markdown("### 3. Mathematischer Beweis")
-    st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder Bürger jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
+    st.write("Das Zertifikat enthält einen Master-Hash. Mit diesem Code kann jeder User jederzeit beweisen, dass die Zahlen exakt aus der angegebenen Quelle stammen.")
 
 st.write("---")
 
