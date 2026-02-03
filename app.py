@@ -6,7 +6,7 @@ import time
 
 # --- 1. INITIALISIERUNG ---
 if 'selected_hist_idx' not in st.session_state:
-    st.session_state.session_state.selected_hist_idx = None
+    st.session_state.selected_hist_idx = None
 if 'registered_salts' not in st.session_state:
     st.session_state.registered_salts = []
 if 'history_data' not in st.session_state:
@@ -44,13 +44,17 @@ st.markdown("""
     }
     .status-locked { color: #ff4b4b; font-weight: bold; }
     .info-hint { color: #aaaaaa; font-style: italic; font-size: 12px; margin-top: -10px; margin-bottom: 15px; }
+    
+    /* Innovations-Box Styling */
+    .innovation-box {
+        background: linear-gradient(90deg, rgba(0,74,153,0.15) 0%, rgba(0,0,0,0) 100%);
+        padding: 25px; border-radius: 12px; border-left: 6px solid #004a99; margin-bottom: 30px;
+    }
+    
     .validator-info {
         background-color: rgba(0, 74, 153, 0.1);
         border-left: 5px solid #004a99;
-        padding: 15px;
-        margin-bottom: 25px;
-        font-size: 14px;
-        line-height: 1.6;
+        padding: 15px; margin-bottom: 25px; font-size: 14px; line-height: 1.6;
     }
     .certificate h3, .certificate p, .certificate b { color: #000000 !important; }
     .detail-box { background-color: #1e3a5f; padding: 20px; border-radius: 8px; margin-top: 10px; border: 1px solid #004a99; }
@@ -69,6 +73,19 @@ if st.sidebar.button("🔄 System Reset"):
 
 # --- 4. HEADER ---
 st.title("🛡️ Verifiable Truth Layer (VTL)")
+
+# INNOVATIONS-FOKUS MESSAGE
+st.markdown("""
+    <div class="innovation-box">
+        <h3 style="margin: 0; color: #90caf9; font-size: 22px;">Defining the New Standard for Provable Fairness.</h3>
+        <p style="font-size: 16px; line-height: 1.6; margin-top: 10px; color: #ffffff; max-width: 900px;">
+            In einer Welt voll automatisierter Prozesse ist Vertrauen die wertvollste Währung. 
+            VTL nutzt Multi-Source-Entropie und kryptografische Protokolle, um sicherzustellen, 
+            dass Ergebnisse nicht nur fair sind, sondern auch für immer <b>beweisbar</b> bleiben.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
 st.write("---")
 
 # --- 5. VTL GENERATOR ---
@@ -79,7 +96,6 @@ if choice == "VTL Generator":
         c_name = st.text_input("Institution / Entity", "VTL Protocol Authority")
         p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
         raw_salt = st.text_input("Protocol-Salt", placeholder="Geben Sie den Salt zur Versiegelung ein...")
-        
         st.markdown('<p class="info-hint">Der Salt ist ein einzigartiger Sicherheitsschlüssel, der das Protokoll individuell versiegelt und Manipulationen durch Vorabberechnung ausschließt.</p>', unsafe_allow_html=True)
         
         if st.button("Salt im VTL Vault registrieren"):
@@ -153,20 +169,18 @@ if choice == "VTL Generator":
 # --- 6. PUBLIC VALIDATOR ---
 elif choice == "Public Validator":
     st.title("🔍 Public Validator")
-    
     st.markdown("""
     <div class="validator-info">
         <b>Wahrheit durch Mathematik:</b> Der Public Validator ist die unabhängige Prüfinstanz für Endnutzer. 
         Durch Eingabe des Protokoll-Hashes gleicht das System die kryptografische Kette live mit den staatlich 
         versiegelten Entropie-Quellen (Lotto-Daten) und dem institutionellen Security-Salt ab. 
-        Ein positives Ergebnis garantiert, dass Manipulationen ausgeschlossen sind.
     </div>
     """, unsafe_allow_html=True)
 
     cert_id = st.text_input("Protokoll-Hash zur Verifizierung eingeben", key="val_input_field")
     if st.button("Integrität prüfen"):
         if cert_id:
-            with st.spinner('Rekonstruktion der kryptografischen Kette...'):
+            with st.spinner('Verifizierung läuft...'):
                 time.sleep(1.2)
                 st.success("✅ INTEGRITÄT MATHEMATISCH BESTÄTIGT")
                 st.info("Dieses Zertifikat entspricht exakt den hinterlegten Entropie-Quellen.")
@@ -178,7 +192,7 @@ elif choice == "Public Validator":
                 - **Proof of Fairness:** Protokoll ist lückenlos und manipulationssicher.
                 """)
         else:
-            st.warning("Bitte geben Sie einen Hash ein, um die Verifizierung zu starten.")
+            st.warning("Bitte geben Sie einen Hash ein.")
 
 # --- 7. HISTORY ---
 st.write("---")
