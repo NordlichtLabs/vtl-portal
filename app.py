@@ -100,7 +100,7 @@ st.subheader("Der VTL-Prozess")
 hiw1, hiw2, hiw3, hiw4 = st.columns(4)
 steps = [("1.", "Versiegelung", "Der Protocol-Salt wird im VTL Vault zeitgestempelt versiegelt."),
          ("2.", "Fixierung", "Lotto-Daten werden als Entropy-Hash unveränderbar registriert."),
-         ("3.", "Kopplung", "Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
+         ("3.", "Kopplung", "Protocol-Salt und Entropy verschmelzen kryptografisch zum Master-Hash."),
          ("4.", "Output", "Aus dem Master-Hash entstehen beweisbare Zahlen.")]
 for i, step in enumerate(steps):
     with [hiw1, hiw2, hiw3, hiw4][i]:
@@ -114,7 +114,7 @@ with col_v:
     st.header("🔐 Security Vault")
     p_id = st.text_input("Reference-ID", "SEC-AUDIT-Q1")
     st.markdown('Protocol-Salt <span style="color:#ff4b4b; font-weight:bold;">*</span>', unsafe_allow_html=True)
-    raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Salt ein...", label_visibility="collapsed")
+    raw_salt = st.text_input("Salt-Input", placeholder="Geben Sie den Protocol-Salt ein...", label_visibility="collapsed")
     
     with st.expander("💡 Was ist der Protocol-Salt? (Beispiel)"):
         st.markdown("""
@@ -131,7 +131,7 @@ with col_v:
     
     btn_c, tim_c = st.columns([2, 1])
     with btn_c:
-        if st.button("Salt im Vault registrieren"):
+        if st.button("Protocol-Salt im Vault registrieren"):
             if not raw_salt.strip():
                 st.error("Bitte geben sie zuerst den Protocol-Salt ein!")
             else:
