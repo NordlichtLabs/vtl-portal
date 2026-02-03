@@ -77,7 +77,6 @@ if choice == "VTL Generator":
                     "Zeit": datetime.now().strftime("%d.%m.%Y %H:%M:%S")
                 })
         
-        # Vault Anzeige direkt unter dem Button
         if st.session_state.registered_salts:
             last_s = st.session_state.registered_salts[-1]
             st.success("✅ Salt im Vault registriert")
@@ -108,16 +107,25 @@ if choice == "VTL Generator":
         p_hash = hashlib.sha256(m_entropy.encode()).hexdigest()
 
     st.write("---")
+    st.header("🧮 Zufall generieren")
+    
+    # Range-Auswahl ist wieder da
+    r_col1, r_col2, r_col3 = st.columns(3)
+    with r_col1: count = st.number_input("Anzahl der Zahlen", min_value=1, max_value=50, value=5)
+    with r_col2: min_v = st.number_input("Von", value=1)
+    with r_col3: max_v = st.number_input("Bis", value=100)
+    
     if st.button("Zahlen berechnen & Zertifikat generieren"):
         if st.session_state.registered_salts:
             current_salt = st.session_state.registered_salts[-1]["Salt"]
             
-            # ECHTE ZUFALLSGENERIERUNG LOGIK
+            # Echte Berechnung basierend auf der gewählten Range
             results = []
-            for i in range(1, 6): # Wir generieren 5 Zahlen
+            for i in range(1, count + 1):
                 seed = f"{p_hash}-{current_salt}-{i}"
                 h = hashlib.sha256(seed.encode()).hexdigest()
-                num = (int(h, 16) % 100) + 1 # Zahlen von 1-100
+                # Berechnung innerhalb der Range (min_v bis max_v)
+                num = (int(h, 16) % (max_v - min_v + 1)) + min_v
                 results.append(str(num))
             
             res_str = ", ".join(results)
